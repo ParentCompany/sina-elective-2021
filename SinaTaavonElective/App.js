@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { BottomNavigation, Text } from 'react-native-paper';
+import SignupPage from './components/SignupPage';
 
 class HelloWorldApp extends Component {
   constructor(props) {
@@ -17,16 +18,13 @@ class HelloWorldApp extends Component {
 
   };
 
-  HomeRoute = () => <Text>Home</Text>;
-
+  HomeRoute = () => <SignupPage />;
   ShopsRoute = () => <Text>Coffe Shops</Text>;
-
   SearchRoute = () => <Text>Search</Text>;
-
   AccountRoute = () => <Text>Account</Text>;
 
   onChange = (e) => {
-    this.setState({index: e});
+    this.setState({ index: e });
   }
 
   renderScene = BottomNavigation.SceneMap({
@@ -34,7 +32,6 @@ class HelloWorldApp extends Component {
     shops: this.ShopsRoute,
     search: this.SearchRoute,
     account: this.AccountRoute,
-
   });
 
   render() {
