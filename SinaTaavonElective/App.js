@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { BottomNavigation, Text } from 'react-native-paper';
 import SignupPage from './components/SignupPage';
 import LoginPage from './components/LoginPage';
+import LoginHandle from './components/LoginHandle';
 
 class HelloWorldApp extends Component {
   constructor(props) {
@@ -20,7 +21,7 @@ class HelloWorldApp extends Component {
   HomeRoute = () => <Text>Home</Text>;
   ShopsRoute = () => <Text>Coffe Shops</Text>;
   SearchRoute = () => <Text>Search</Text>;
-  AccountRoute = () => <LoginPage />;
+  AccountRoute = () => <LoginHandle />;
 
   onChange = (e) => {
     this.setState({ index: e });

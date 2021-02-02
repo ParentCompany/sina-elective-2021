@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Button, TextInput, Title, Paragraph } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native'
-import SignupPage from './SignupPage';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -23,13 +22,10 @@ class LoginPage extends Component {
         }
     }
 
-    loadSignup = () => {
-        <SignupPage />
-    }
-
 
     render() {
         return (
+           
             <View style={styles.container}>
                 <Title style={styles.titlePage}>Login</Title>
                 <TextInput
@@ -47,10 +43,6 @@ class LoginPage extends Component {
                 />
                 <Button style={styles.loginButton} mode="contained" onPress={this.logIn}>
                     Login
-  </Button>
-                <Paragraph style={styles.textOr}>Or</Paragraph>
-                <Button style={styles.loginButton} mode="contained" onPress={this.loadSignup}>
-                    Sign up
   </Button>
             </View>
         );
