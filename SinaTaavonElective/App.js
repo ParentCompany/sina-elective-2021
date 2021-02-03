@@ -1,49 +1,28 @@
 import React, { Component } from 'react';
-import { BottomNavigation, Text } from 'react-native-paper';
-import SignupPage from './components/SignupPage';
-import LoginPage from './components/LoginPage';
+import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
+import 'react-native-gesture-handler';
 import LoginHandle from './components/LoginHandle';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-class HelloWorldApp extends Component {
+const Tab = createMaterialBottomTabNavigator();
+
+class App extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      index: 0,
-      routes: [
-        { key: 'home', title: 'Home', icon: 'home', color: '#3F51B5' },
-        { key: 'shops', title: 'Coffe Shops', icon: 'store', color: '#009688' },
-        { key: 'search', title: 'Search', icon: 'magnify', color: '#795548' },
-        { key: 'account', title: 'Account', icon: 'account', color: '#607D8B' },
-      ]
-    }
+    this.state = {}
   };
 
-  HomeRoute = () => <Text>Home</Text>;
-  ShopsRoute = () => <Text>Coffe Shops</Text>;
-  SearchRoute = () => <Text>Search</Text>;
-  AccountRoute = () => <LoginHandle />;
-
-  onChange = (e) => {
-    this.setState({ index: e });
-  }
-
-  renderScene = BottomNavigation.SceneMap({
-    home: this.HomeRoute,
-    shops: this.ShopsRoute,
-    search: this.SearchRoute,
-    account: this.AccountRoute,
-  });
-
   render() {
-    const { index, routes } = this.state;
     return (
-      <BottomNavigation
-        navigationState={{ index, routes }}
-        onIndexChange={this.onChange}
-        renderScene={this.renderScene}
-      />
+        <Tab.Navigator initialRouteName="Navigation" activeColor="#ffffff" barStyle={{ backgroundColor: '#1C097A' }}>
+        <Tab.Screen name="Home" component={LoginHandle} options={{ tabBarLabel: 'Home',tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="home" color={color} size={26} />),}} />
+        <Tab.Screen name="Coffee Shops" component={LoginHandle} options={{ tabBarLabel: 'Coffee Shop',tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="store" color={color} size={26} />),}} />
+        <Tab.Screen name="Search" component={LoginHandle} options={{ tabBarLabel: 'Search',tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="magnify" color={color} size={26} />),}} />
+        <Tab.Screen name="Account" component={LoginHandle} options={{ tabBarLabel: 'Account',tabBarIcon: ({ color }) => (<MaterialCommunityIcons name="account" color={color} size={26} />),}} />
+      </Tab.Navigator>
     );
   }
 }
 
-export default HelloWorldApp;
+
+export default App;

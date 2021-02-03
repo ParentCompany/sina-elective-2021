@@ -5,12 +5,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import SignupPage from './SignupPage';
 import LoginPage from './LoginPage';
 
-class LoginHandle extends Component {
+class HomePage extends Component {
     constructor(props) {
         super(props);
         this.state = { loginStatus: false }
     };
-
 
     loginPageHandler = () => {
         this.setState({ loginStatus: true })
@@ -19,7 +18,6 @@ class LoginHandle extends Component {
     SignupPageHandler = () => {
         this.setState({ loginStatus: false })
     }
-
 
     render() {
         return (
@@ -59,4 +57,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default LoginHandle;
+export default HomePage;
