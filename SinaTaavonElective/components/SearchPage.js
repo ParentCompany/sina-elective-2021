@@ -10,26 +10,22 @@ class SearchPage extends Component {
         this.state = { searchQuery: '' }
     };
 
-    
-
     onChangeSearch = (searchQuery) => {
         this.setState({ searchQuery: searchQuery })
     }
-      
 
     render() {
         const { searchQuery } = this.state;
         return (
             <View style={styles.container}>
                 <ScrollView >
-                <Searchbar
-      placeholder="Search"
-      onChangeText={this.onChangeSearch}
-      value={searchQuery}
-    />
-          
+                    <Searchbar
+                        placeholder="Search"
+                        onChangeText={this.onChangeSearch}
+                        value={searchQuery}
+                    />
                 </ScrollView>
-          </View>
+            </View>
         );
     }
 }
@@ -43,7 +39,7 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         margin: 10
-        }
+    }
 })
 
 export default SearchPage;

@@ -12,20 +12,36 @@ class LoginPage extends Component {
         this.setState({ [key]: value })
     }
 
-    logIn = async () => {
+    signUp = async () => {
         const { password, email } = this.state
-        try {
-            // logic
-            console.log('user successfully signed up!: ', success)
-        } catch (error) {
-            console.log('error signing up: ', error)
-        }
-    }
 
+        let payload = { email: email, password: password }
+
+        return fetch(`${global.BASE_URL}/user/login`, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then((response) => {
+                if (response.status === 201) {
+                    console.log("Successful")
+                } else if (response.status === 400) {
+                    console.log("Invalid validation")
+                } else {
+                    console.log("Error")
+                }
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+
+    }
 
     render() {
         return (
-           
+
             <View style={styles.container}>
                 <Title style={styles.titlePage}>Login</Title>
                 <TextInput

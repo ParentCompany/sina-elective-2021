@@ -13,30 +13,29 @@ class SignupPage extends Component {
         this.setState({ [key]: value })
     }
 
-
     signUp = async () => {
         const { password, email, firstname, lastname } = this.state
 
         let payload = { first_name: firstname, last_name: lastname, email: email, password: password }
-        
-        return fetch('http://10.0.2.2:3333/api/1.0.0/user', {
+
+        return fetch(`${global.BASE_URL}/user`, {
             method: 'post',
             headers: {
-              'Content-Type': 'application/json'
+                'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
-          })
+        })
             .then((response) => {
-              if (response.status === 201) {
-                console.log("Successful")
-              } else if (response.status === 400) {
-                console.log("Invalid validation")
-              } else {
-                console.log("Error") 
-              }
+                if (response.status === 201) {
+                    console.log("Successful")
+                } else if (response.status === 400) {
+                    console.log("Invalid validation")
+                } else {
+                    console.log("Error")
+                }
             })
             .catch((error) => {
-              console.log(error)
+                console.log(error)
             })
 
     }
