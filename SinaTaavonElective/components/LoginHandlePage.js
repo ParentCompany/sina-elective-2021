@@ -4,11 +4,12 @@ import { Alert, View, StyleSheet } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SignupPage from './SignupPage';
 import LoginPage from './LoginPage';
+import AccountPage from './AccountPage';
 
 class LoginHandlePage extends Component {
     constructor(props) {
         super(props);
-        this.state = { loginStatus: false }
+        this.state = { loginStatus: false, isLoggedin: false }
     };
 
 
@@ -20,11 +21,21 @@ class LoginHandlePage extends Component {
         this.setState({ loginStatus: false })
     }
 
+    componentDidMount = async () => {
+        const token = await AsyncStorage.getItem('session_token');
+        if (token !== null || token !== undefined || token !== '') {
+            this.setState({ isLoggedin: true });
+        } else {
+            this.setState({ isLoggedin: false });
+        }
+    }
+
 
     render() {
+        const { loginStatus, isLoggedin } = this.state;
         return (
             <View style={styles.container}>
-                <View style={styles.buttonContainer}>
+                {isLoggedin ? <View></View> : <View style={styles.buttonContainer}>
                     <Button style={styles.loginButton} compact="true" mode="outlined" onPress={this.SignupPageHandler}>
                         Sign up Page
   </Button>
@@ -34,9 +45,10 @@ class LoginHandlePage extends Component {
                     <Button style={styles.loginButton} compact="true" mode="outlined" onPress={this.loginPageHandler}>
                         Clear Session
   </Button>
-                </View>
+                </View>}
 
-                {this.state.loginStatus ? <LoginPage /> : <SignupPage />}
+
+                {isLoggedin ? <AccountPage /> : loginStatus ? <LoginPage /> : <SignupPage />}
 
             </View>
         );

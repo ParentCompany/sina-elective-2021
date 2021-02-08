@@ -13,6 +13,7 @@ class SignupPage extends Component {
         this.setState({ [key]: value })
     }
 
+
     signUp = async () => {
         const { password, email, firstname, lastname } = this.state
 

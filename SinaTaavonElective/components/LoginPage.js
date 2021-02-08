@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button, TextInput, Title, Paragraph } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 class LoginPage extends Component {
     constructor(props) {
@@ -12,7 +13,7 @@ class LoginPage extends Component {
         this.setState({ [key]: value })
     }
 
-    signUp = async () => {
+    logIn = async () => {
         const { password, email } = this.state
 
         let payload = { email: email, password: password }
@@ -24,15 +25,12 @@ class LoginPage extends Component {
             },
             body: JSON.stringify(payload)
         })
-            .then((response) => {
-                if (response.status === 201) {
-                    console.log("Successful")
-                } else if (response.status === 400) {
-                    console.log("Invalid validation")
-                } else {
-                    console.log("Error")
-                }
-            })
+            .then((response) => response.json())
+            .then(async (responseJson) => {
+                console.log(responseJson)
+                await AsyncStorage.setItem('session_token', String(responseJson.token));
+                await AsyncStorage.setItem('user_id', String(responseJson.id));
+              })
             .catch((error) => {
                 console.log(error)
             })
