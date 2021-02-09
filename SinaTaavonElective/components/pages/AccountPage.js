@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, TextInput, Title, Paragraph } from 'react-native-paper';
+import { Button, TextInput, Title, Paragraph, Card } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ActivityIndicator, Colors } from 'react-native-paper';
@@ -64,6 +64,7 @@ class AccountPage extends Component {
                 })
         } else {
             console.log('Need to sign in');
+            AsyncStorage.clear();
         }
 
     }
@@ -74,14 +75,26 @@ class AccountPage extends Component {
 
     render() {
         const { userData, isLoading } = this.state;
-        console.log(userData)
         return (
             <View style={styles.container}>
-                {isLoading ? <Title style={styles.titlePage}>{userData.email}</Title> : <ActivityIndicator animating={true} color={'#3366FF'} />}
+                {isLoading ? <View>
+                    <Card style={styles.spaceCard}>
+                    <Paragraph style={styles.titlePage}>First name: {userData.first_name}</Paragraph>
+                    <Paragraph style={styles.titlePage}>Last name: {userData.last_name}</Paragraph>
+                    <Paragraph style={styles.titlePage}>Email address: {userData.email}</Paragraph>
+                    </Card>
+                    
+                </View> : <ActivityIndicator animating={true} color={'#3366FF'} />}
 
-                <Button style={styles.loginButton} compact="true" mode="outlined" onPress={this.logOut}>
-                    Logout
+                <View style={styles.containerRow}>
+                    <Button style={styles.loginButton} compact="true" mode="contained" onPress={this.logOut}>
+                        Logout
 </Button>
+                    <Button style={styles.loginButton} compact="true" mode="contained" onPress={this.logOut}>
+                        Edit
+</Button>
+                </View>
+
             </View>
         );
     }
@@ -92,8 +105,8 @@ const styles = StyleSheet.create({
         textAlign: 'center'
     },
     titlePage: {
-        margin: 10,
-        marginBottom: 20
+        marginVertical: 10,
+        marginHorizontal: 10
     },
     textInput: {
         margin: 10
@@ -105,7 +118,13 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
-    }
+    },
+    containerRow: {
+        flexDirection: 'row'
+    },
+    spaceCard: {
+        marginHorizontal: 10
+    },
 })
 
 export default AccountPage;
