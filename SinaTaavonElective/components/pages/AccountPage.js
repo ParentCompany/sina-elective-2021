@@ -11,6 +11,7 @@ class AccountPage extends Component {
     };
 
     logOut = async () => {
+        const nav = this.props.navigation;
         const token = await AsyncStorage.getItem('session_token');
         return fetch(`${global.BASE_URL}/user/logout`, {
             method: 'post',
@@ -20,13 +21,12 @@ class AccountPage extends Component {
             },
         })
             .then((response) => {
-                if(response.status === 200) {
+                if (response.status === 200) {
                     console.log('user gone')
                     AsyncStorage.clear();
-                    this.forceUpdate(AccountPage);
+                    nav.navigate('LoginPage');
                 } else {
                     AsyncStorage.clear();
-                    this.forceUpdate(AccountPage);
                 }
             })
             .catch((error) => {
@@ -37,10 +37,17 @@ class AccountPage extends Component {
     }
 
     componentDidMount = async () => {
+        const nav = this.props.navigation;
+        this._unsubscribe = nav.addListener('focus', () => {
+            this.componentDidMount();
+        });
         const token = await AsyncStorage.getItem('session_token');
         const userId = await AsyncStorage.getItem('user_id');
 
-        if (token && userId === [] || token && userId === undefined || token && userId === null || token && userId === '') {
+        if (token === null || token === undefined || token === '' || token === []) {
+            nav.navigate('SignupPage');
+        } else if (token !== null || token !== undefined || token !== '' || token !== []) {
+
             return fetch(`${global.BASE_URL}/user/${userId}`, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -56,9 +63,13 @@ class AccountPage extends Component {
                     console.log(error + "Account page error")
                 })
         } else {
-            console.log('Need to sign in'); 
+            console.log('Need to sign in');
         }
 
+    }
+
+    componentWillUnmount() {
+        this._unsubscribe();
     }
 
     render() {
@@ -69,7 +80,7 @@ class AccountPage extends Component {
                 {isLoading ? <Title style={styles.titlePage}>{userData.email}</Title> : <ActivityIndicator animating={true} color={'#3366FF'} />}
 
                 <Button style={styles.loginButton} compact="true" mode="outlined" onPress={this.logOut}>
-                        Logout
+                    Logout
 </Button>
             </View>
         );

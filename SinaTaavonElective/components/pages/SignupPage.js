@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Button, TextInput, Title, Caption } from 'react-native-paper';
 import { Alert, View, StyleSheet } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ceil } from 'react-native-reanimated';
 
 class SignupPage extends Component {
     constructor(props) {
@@ -29,6 +30,7 @@ class SignupPage extends Component {
             .then((response) => {
                 if (response.status === 201) {
                     console.log("Successful")
+                    this.autoLogin();
                 } else if (response.status === 400) {
                     console.log("Invalid validation")
                 } else {
@@ -41,7 +43,35 @@ class SignupPage extends Component {
 
     }
 
+    autoLogin = async () => {
+
+        const nav = this.props.navigation;
+        const { password, email } = this.state
+
+        let payload = { email: email, password: password }
+
+        return fetch(`${global.BASE_URL}/user/login`, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then((response) => response.json())
+            .then(async (responseJson) => {
+                console.log(responseJson)
+                await AsyncStorage.setItem('session_token', String(responseJson.token));
+                await AsyncStorage.setItem('user_id', String(responseJson.id));
+                nav.navigate('AccountPage')
+              })
+            .catch((error) => {
+                console.log(error)
+            })
+
+    }
+
     render() {
+        const nav = this.props.navigation;
         return (
             <View style={styles.container}>
                 <Title style={styles.titlePage}>Sign up</Title>
@@ -74,6 +104,10 @@ class SignupPage extends Component {
                 <Button style={styles.signupButton} mode="contained" onPress={this.signUp}>
                     Sign up
   </Button>
+  <Caption style={styles.captionTextOr}>or</Caption>
+                <Button style={styles.signupButton} mode="contained" onPress={() => nav.navigate('LoginPage')}>
+                    Login
+  </Button>
             </View>
         );
     }
@@ -92,6 +126,10 @@ const styles = StyleSheet.create({
     },
     captionText: {
         margin: 10
+    },
+    captionTextOr: {
+        margin: 10,
+        textAlign: 'center'
     },
     container: {
         flex: 1,

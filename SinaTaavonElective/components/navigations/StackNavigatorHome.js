@@ -12,11 +12,12 @@ class StackNavigatorHome extends Component {
         this.state = {}
     };
 
+
     render() {
         return (
             <Stack.Navigator>
                 <Stack.Screen name="HomePage" component={HomePage} />
-                <Stack.Screen name="Coffee" component={CoffeeShopsPage} />
+                <Stack.Screen name="Coffee"  component={CoffeeShopsPage} />
             </Stack.Navigator>
         );
     }

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, TextInput, Title, Paragraph } from 'react-native-paper';
+import { Button, TextInput, Title, Caption } from 'react-native-paper';
 import { View, StyleSheet } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -14,6 +14,7 @@ class LoginPage extends Component {
     }
 
     logIn = async () => {
+        const nav = this.props.navigation;
         const { password, email } = this.state
 
         let payload = { email: email, password: password }
@@ -30,7 +31,7 @@ class LoginPage extends Component {
                 console.log(responseJson)
                 await AsyncStorage.setItem('session_token', String(responseJson.token));
                 await AsyncStorage.setItem('user_id', String(responseJson.id));
-                this.forceUpdate(LoginPage);
+                nav.navigate('AccountPage')
               })
             .catch((error) => {
                 console.log(error)
@@ -60,6 +61,10 @@ class LoginPage extends Component {
                 <Button style={styles.loginButton} mode="contained" onPress={this.logIn}>
                     Login
   </Button>
+  <Caption style={styles.captionTextOr}>or</Caption>
+                <Button style={styles.loginButton} mode="contained" onPress={() => nav.navigate('SignupPage')}>
+                    Sign up
+  </Button>
             </View>
         );
     }
@@ -78,6 +83,10 @@ const styles = StyleSheet.create({
     },
     loginButton: {
         margin: 10
+    },
+    captionTextOr: {
+        margin: 10,
+        textAlign: 'center'
     },
     container: {
         flex: 1,
