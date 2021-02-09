@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button } from 'react-native-paper';
-import { Alert, View, StyleSheet } from 'react-native'
+import { Alert, View, StyleSheet, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import SignupPage from './SignupPage';
 import LoginPage from './LoginPage';
@@ -23,37 +23,46 @@ class LoginHandlePage extends Component {
 
     componentDidMount = async () => {
         const token = await AsyncStorage.getItem('session_token');
-        if (token !== null || token !== undefined || token !== '') {
-            this.setState({ isLoggedin: true });
-        } else {
+        if (token === null || token === undefined || token === '' || token === []) {
             this.setState({ isLoggedin: false });
+        } else if (token !== null || token !== undefined || token !== '' || token !== []) {
+            this.setState({ isLoggedin: true });
         }
     }
 
 
     render() {
         const { loginStatus, isLoggedin } = this.state;
-        return (
-            <View style={styles.container}>
-                {isLoggedin ? <View></View> : <View style={styles.buttonContainer}>
+
+        if (!isLoggedin) {
+            return (<ScrollView>
+                <View style={styles.container}>
+                
+                {loginStatus ? <LoginPage /> : <SignupPage />}
+                <View style={styles.buttonContainer}>
                     <Button style={styles.loginButton} compact="true" mode="outlined" onPress={this.SignupPageHandler}>
                         Sign up Page
-  </Button>
+</Button>
                     <Button style={styles.loginButton} compact="true" mode="outlined" onPress={this.loginPageHandler}>
                         Login Page
-  </Button>
+</Button>
                     <Button style={styles.loginButton} compact="true" mode="outlined" onPress={this.loginPageHandler}>
                         Clear Session
-  </Button>
-                </View>}
-
-
-                {isLoggedin ? <AccountPage /> : loginStatus ? <LoginPage /> : <SignupPage />}
-
+</Button>
+                </View>
+            
+            </View>
+            </ScrollView>)
+        }
+        return (
+            <View style={styles.container}>
+                <AccountPage />
             </View>
         );
     }
 }
+
+
 
 const styles = StyleSheet.create({
     buttonContainer: {
@@ -66,7 +75,8 @@ const styles = StyleSheet.create({
     },
     container: {
         flex: 1,
-        flexDirection: 'column',
+        marginTop: 20,
+        alignContent: 'center',
         justifyContent: 'center',
     }
 })

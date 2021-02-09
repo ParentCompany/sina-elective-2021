@@ -30,6 +30,7 @@ class LoginPage extends Component {
                 console.log(responseJson)
                 await AsyncStorage.setItem('session_token', String(responseJson.token));
                 await AsyncStorage.setItem('user_id', String(responseJson.id));
+                this.forceUpdate(LoginPage);
               })
             .catch((error) => {
                 console.log(error)
@@ -38,6 +39,7 @@ class LoginPage extends Component {
     }
 
     render() {
+        const nav = this.props.navigation;
         return (
 
             <View style={styles.container}>

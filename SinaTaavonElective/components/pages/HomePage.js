@@ -3,7 +3,7 @@ import { Alert, View, StyleSheet, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
 
-import SingleCardView from './SingleCardView'
+import SingleCardView from '../SingleCardView';
 
 
 class HomePage extends Component {
@@ -40,6 +40,7 @@ class HomePage extends Component {
 
 
     render() {
+        const nav = this.props.navigation;
         return (
             <View style={styles.container}>
                 <ScrollView >
@@ -48,7 +49,7 @@ class HomePage extends Component {
                         <Card style={styles.rowCard}>
                             <Card.Title title="Coffee for Nerds" subtitle="Small friendly coffee shop with high speed internet" />
                             <Card.Actions>
-                                <Button mode="text">Open</Button>
+                                <Button onPress={() => {nav.navigate('Coffee')}} mode="text">Open</Button>
                             </Card.Actions>
                         </Card>
 
