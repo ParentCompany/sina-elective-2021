@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, View, StyleSheet, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Button, Card, Title, Paragraph } from 'react-native-paper';
+import { Button, Card, Title, Paragraph, Avatar, IconButton } from 'react-native-paper';
 
 import SingleCardView from '../SingleCardView';
 
@@ -12,31 +12,6 @@ class HomePage extends Component {
         this.state = { loginStatus: false }
     };
 
-    signUp = async () => {
-        const { password, email } = this.state
-
-        let payload = { email: email, password: password }
-
-        return fetch(`${global.BASE_URL}/user/login`, {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-            .then((response) => {
-                if (response.status === 201) {
-                    console.log("Successful")
-                } else if (response.status === 400) {
-                    console.log("Invalid validation")
-                } else {
-                    console.log("Error")
-                }
-            })
-            .catch((error) => {
-                console.log(error)
-            })
-    }
 
 
     render() {
@@ -45,7 +20,7 @@ class HomePage extends Component {
             <View style={styles.container}>
                 <ScrollView >
                     <Title style={styles.titlePage}>Explore</Title>
-                    <View style={styles.rowContainer}>
+                    {/* <View style={styles.rowContainer}>
                         <Card style={styles.rowCard}>
                             <Card.Title title="Coffee for Nerds" subtitle="Small friendly coffee shop with high speed internet" />
                             <Card.Actions>
@@ -66,10 +41,15 @@ class HomePage extends Component {
                                 <Button mode="text">Open</Button>
                             </Card.Actions>
                         </Card>
-                    </View>
+                    </View> */}
+                    <Card>
+                    <Card.Cover source={{ uri: 'https://picsum.photos/700' }} />
+                    <Card.Title title="Card Title" subtitle="Card Subtitle" left={(props) => <Avatar.Icon {...props} icon="cup" />} right={(props) => <IconButton {...props} icon="arrow-right-drop-circle-outline" onPress={() => { }} />} />
+                    </Card>
+                   
 
 
-                    <SingleCardView />
+                    {/* <SingleCardView /> */}
 
 
                 </ScrollView>
@@ -99,6 +79,7 @@ const styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'column',
         justifyContent: 'center',
+        marginHorizontal: 10
     }
 })
 

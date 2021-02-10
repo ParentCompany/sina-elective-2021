@@ -4,7 +4,7 @@ import { Alert, View, StyleSheet } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ceil } from 'react-native-reanimated';
 
-class SignupPage extends Component {
+class AccountDetailsUpdatePage extends Component {
     constructor(props) {
         super(props);
         this.state = { email: '', password: '', firstname: '', lastname: '' }
@@ -14,23 +14,38 @@ class SignupPage extends Component {
         this.setState({ [key]: value })
     }
 
+    cleanObject = (object) => {
+        for (var propName in object) {
+            if (object[propName] === null || object[propName] === undefined || object[propName] === '') {
+                delete object[propName];
+            }
+        }
+        return object
+    }
 
-    signUp = async () => {
+
+    UpdateDetails = async () => {
+        const nav = this.props.navigation;
+        const token = await AsyncStorage.getItem('session_token');
+        const userId = await AsyncStorage.getItem('user_id');
         const { password, email, firstname, lastname } = this.state
 
         let payload = { first_name: firstname, last_name: lastname, email: email, password: password }
 
-        return fetch(`${global.BASE_URL}/user`, {
-            method: 'post',
+        const cleanPayload = this.cleanObject(payload)
+
+        return fetch(`${global.BASE_URL}/user/${userId}`, {
+            method: 'patch',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'X-Authorization': token
             },
-            body: JSON.stringify(payload)
+            body: JSON.stringify(cleanPayload)
         })
             .then((response) => {
-                if (response.status === 201) {
+                if (response.status === 200) {
                     console.log("Successful")
-                    this.autoLogin();
+                    nav.navigate('AccountPage');
                 } else if (response.status === 400) {
                     console.log("Invalid validation")
                 } else {
@@ -43,38 +58,11 @@ class SignupPage extends Component {
 
     }
 
-    autoLogin = async () => {
-
-        const nav = this.props.navigation;
-        const { password, email } = this.state
-
-        let payload = { email: email, password: password }
-
-        return fetch(`${global.BASE_URL}/user/login`, {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        })
-            .then((response) => response.json())
-            .then(async (responseJson) => {
-                console.log(responseJson)
-                await AsyncStorage.setItem('session_token', String(responseJson.token));
-                await AsyncStorage.setItem('user_id', String(responseJson.id));
-                nav.navigate('AccountPage')
-              })
-            .catch((error) => {
-                console.log(error)
-            })
-
-    }
-
     render() {
         const nav = this.props.navigation;
         return (
             <View style={styles.container}>
-                <Title style={styles.titlePage}>Sign up</Title>
+                <Title style={styles.titlePage}>Update your details</Title>
                 <TextInput
                     style={styles.textInput}
                     placeholder='First name'
@@ -101,12 +89,8 @@ class SignupPage extends Component {
                     onChangeText={value => this.onChangeText('password', value)}
                 />
                 <Caption style={styles.captionText}>Minimum 5 characters </Caption>
-                <Button style={styles.signupButton} mode="contained" onPress={this.signUp}>
-                    Sign up
-  </Button>
-  <Caption style={styles.captionTextOr}>or</Caption>
-                <Button style={styles.signupButton} mode="contained" onPress={() => nav.navigate('LoginPage')}>
-                    Login
+                <Button style={styles.signupButton} mode="contained" onPress={this.UpdateDetails}>
+                    Update
   </Button>
             </View>
         );
@@ -138,4 +122,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default SignupPage;
+export default AccountDetailsUpdatePage;
