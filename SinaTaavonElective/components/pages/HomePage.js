@@ -3,13 +3,10 @@ import { Alert, View, StyleSheet, ScrollView } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, Card, Title, Paragraph, Avatar, IconButton, Colors, ProgressBar, List } from 'react-native-paper';
 
-import SingleCardView from '../SingleCardView';
-
-
 class HomePage extends Component {
     constructor(props) {
         super(props);
-        this.state = { isLoading: true, locData: {}, expanded: false }
+        this.state = { isLoading: true, locData: {} }
     };
 
     statusCodeHandler = (response) => {
@@ -39,7 +36,7 @@ class HomePage extends Component {
     }
 
     componentDidMount = () => {
-            this.getData();
+        this.getData();
     }
 
     getData = () => {
@@ -61,8 +58,7 @@ class HomePage extends Component {
     }
 
     render() {
-        const { navigation } = this.props;
-        const { locData } = this.state || {};
+        const { locData } = this.state
 
         return (
             <View style={styles.container}>
@@ -72,29 +68,6 @@ class HomePage extends Component {
                         <Button icon="refresh" compact={true} mode="outlined" onPress={() => this.getData()}>
                         </Button>
                     </View>
-
-                    {/* <View style={styles.rowContainer}>
-                        <Card style={styles.rowCard}>
-                            <Card.Title title="Coffee for Nerds" subtitle="Small friendly coffee shop with high speed internet" />
-                            <Card.Actions>
-                                <Button onPress={() => {navigation.navigate('Coffee')}} mode="text">Open</Button>
-                            </Card.Actions>
-                        </Card>
-
-                        <Card style={styles.rowCard}>
-                            <Card.Title title="Coffee for Nerds" subtitle="Small friendly coffee shop with high speed internet" />
-                            <Card.Actions>
-                                <Button mode="text">Open</Button>
-                            </Card.Actions>
-                        </Card>
-
-                        <Card style={styles.rowCard}>
-                            <Card.Title title="Coffee for Nerds" subtitle="Small friendly coffee shop with high speed internet" />
-                            <Card.Actions>
-                                <Button mode="text">Open</Button>
-                            </Card.Actions>
-                        </Card>
-                    </View> */}
                     <Card>
                         <Card.Title title={locData.location_name} subtitle={locData.location_town} left={(props) => <Avatar.Icon {...props} icon="cup" />} right={(props) => <IconButton {...props} icon="coffee-to-go-outline" color={Colors.purple700} onPress={() => { }} />} />
                         <Card.Cover source={{ uri: 'https://images.pexels.com/photos/683039/pexels-photo-683039.jpeg?auto=compress&cs=tinysrgb&h=750&w=1260' }} />
@@ -112,10 +85,10 @@ class HomePage extends Component {
                             {locData?.location_reviews?.map((review, index) => (
                                 <View key={index} style={styles.reviewRow}>
                                     <Avatar.Icon style={styles.avatarIcon} size={24} icon="face" />
-                                    <Paragraph style={{flex: 1, flexWrap: 'wrap'}}>{review.review_body}</Paragraph>
+                                    <Paragraph style={{ flex: 1, flexWrap: 'wrap' }}>{review.review_body}</Paragraph>
                                     <Button icon="thumb-up" compact={true} disabled={true} mode="text" >
-    {review.likes}
-  </Button>
+                                        {review.likes}
+                                    </Button>
                                 </View>
                             ))}
 
@@ -126,7 +99,7 @@ class HomePage extends Component {
 
 
 
-                    {/* <SingleCardView /> */}
+
 
 
                 </ScrollView>

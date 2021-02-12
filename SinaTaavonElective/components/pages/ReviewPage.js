@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Alert, View, StyleSheet, ScrollView, Text } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
-import SingleCardView from '../SingleCardView';
 
 class ReviewPage extends Component {
     constructor(props) {
@@ -74,7 +73,7 @@ class ReviewPage extends Component {
             .then((response) => this.statusCodeHandler(response))
             .then(async (responseJson) => {
                 await this.setStateAsync({ shopData: responseJson });
-                    this.setState({ isNotLoading: true });
+                this.setState({ isNotLoading: true });
             })
             .catch((error) => {
                 console.log(error + 'Account page error')
@@ -87,17 +86,39 @@ class ReviewPage extends Component {
     render() {
         const { navigation } = this.props;
         const { shopData } = this.state || {};
-        console.log(shopData)
+        console.log(shopData);
+
+        const coverPhoto = [
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-1.jpg'
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-2.jpg'
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-3.jpg'
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-4.jpg'
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-5.jpg'
+            },
+        ]
 
         return (
             <View style={styles.container}>
                 <ScrollView>
-                {shopData?.map((shop, index) => (
-                    <SingleCardView key={index} title={shop.location_name} location={shop.location_town} photo={shop.photo_path} />
-                ))}
-                
+                    {shopData?.map((shop, index) => (
+                        <Card key={index} style={styles.spaceCard}>
+                            <Card.Title title={shop.location_name} subtitle={shop.location_town} />
+                            <Card.Cover source={{ uri: coverPhoto[index].path }} />
+                            <Card.Actions>
+                                <Button mode="text" compact={true} onPress={() => navigation.navigate('ShopPage', { shopId: shop.location_id, coverPhoto: coverPhoto[index].path })}>Go to the Coffee Shop</Button>
+                            </Card.Actions>
+                        </Card>
+                    ))}
                 </ScrollView>
-                
             </View>
         );
     }

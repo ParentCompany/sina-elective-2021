@@ -11,16 +11,17 @@ class SingleCardView extends Component {
     };
 
     render() {
-        const { title, location, photo } = this.props
+        const { navigation } = this.props;
+        const { data } = this.props;
         return (
             <View style={styles.container}>
-                    <Card style={styles.spaceCard}>
-                        <Card.Title title={title} subtitle={location} />
-                        <Card.Cover source={{ uri: 'https://images.unsplash.com/photo-1586558284960-362f8577f94d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80' }} />
-                        <Card.Actions>
-                            <Button mode="text">Open</Button>
-                        </Card.Actions>
-                    </Card>
+                <Card style={styles.spaceCard}>
+                    <Card.Title title={data.location_name} subtitle={data.location_town} />
+                    <Card.Cover source={{ uri: 'https://images.unsplash.com/photo-1586558284960-362f8577f94d?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80' }} />
+                    <Card.Actions>
+                        <Button mode="text" compact={true} onPress={() => navigation.navigate('ShopPage', { data: data })}>Go to the Coffee Shop</Button>
+                    </Card.Actions>
+                </Card>
             </View>
         );
     }
