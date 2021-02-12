@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Button, TextInput, Title, Caption } from 'react-native-paper';
 import { Alert, View, StyleSheet } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ceil } from 'react-native-reanimated';
 
 class SignupPage extends Component {
     constructor(props) {

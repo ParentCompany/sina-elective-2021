@@ -19,7 +19,7 @@ class StackNavigatorAccount extends Component {
 
     render() {
         return (
-            <Stack.Navigator>
+            <Stack.Navigator screenOptions={{ headerLeft: null }}>
                 <Stack.Screen name="AccountPage" component={AccountPage} />
                 <Stack.Screen name="AccountDetailsUpdatePage" component={AccountDetailsUpdatePage} />
                 <Stack.Screen name="SignupPage" component={SignupPage} />

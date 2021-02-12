@@ -7,7 +7,7 @@ import { ceil } from 'react-native-reanimated';
 class AccountDetailsUpdatePage extends Component {
     constructor(props) {
         super(props);
-        this.state = { email: '', password: '', firstname: '', lastname: '' }
+        this.state = { email: '', password: '', firstname: '', lastname: '', reFetch: 'notUpdated' }
     };
 
     onChangeText = (key, value) => {
@@ -25,7 +25,7 @@ class AccountDetailsUpdatePage extends Component {
 
 
     UpdateDetails = async () => {
-        const nav = this.props.navigation;
+        const { navigation } = this.props;
         const token = await AsyncStorage.getItem('session_token');
         const userId = await AsyncStorage.getItem('user_id');
         const { password, email, firstname, lastname } = this.state
@@ -44,8 +44,7 @@ class AccountDetailsUpdatePage extends Component {
         })
             .then((response) => {
                 if (response.status === 200) {
-                    console.log("Successful")
-                    nav.navigate('AccountPage');
+                    navigation.push('AccountPage', {reFetch: 'updated'});
                 } else if (response.status === 400) {
                     console.log("Invalid validation")
                 } else {
@@ -59,7 +58,6 @@ class AccountDetailsUpdatePage extends Component {
     }
 
     render() {
-        const nav = this.props.navigation;
         return (
             <View style={styles.container}>
                 <Title style={styles.titlePage}>Update your details</Title>
