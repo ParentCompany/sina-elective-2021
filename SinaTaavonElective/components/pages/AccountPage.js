@@ -20,7 +20,7 @@ class AccountPage extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			userData: {},
+			userData: [],
 			isLoading: true,
 			userReviews: { reviews: [] },
 			reFetch: 'notUpdated',
@@ -96,23 +96,37 @@ class AccountPage extends Component {
 
 	componentDidMount = async () => {
 		const { navigation } = this.props;
+		const { userData } = this.state;
+
+		this.ejectComponent = navigation.addListener('focus', () => {
+			this.componentDidMount()
+		})
+
 		const token = await AsyncStorage.getItem('session_token');
 
 		if (token === null || token === undefined || token === '' || token === []) {
-			navigation.push('SignupPage');
+			navigation.navigate('LoginPage');
 		} else if (
 			token !== null ||
 			token !== undefined ||
 			token !== '' ||
 			token !== []
-		) {
-			this.getData();
+		) { 
+			if(userData.length === 0){
+				this.getData(token);
+			}
+
 		} else {
 			console.log('Need to sign in');
 			AsyncStorage.clear();
-			navigation.push('LoginPage');
+			navigation.navigate('LoginPage');
 		}
 	};
+
+	componentWillUnmount () {
+		this.ejectComponent()
+	  }
+
 
 	getData = async () => {
 		const token = await AsyncStorage.getItem('session_token');
@@ -144,7 +158,7 @@ class AccountPage extends Component {
 		})
 			.then((response) => response.json())
 			.then(async (responseJson) => {
-				await this.setStateAsync({ userReviews: responseJson });
+				this.setState({ userReviews: responseJson });
 			})
 			.catch((error) => {
 				console.log(error + 'Account page error');
@@ -153,7 +167,7 @@ class AccountPage extends Component {
 
 	_onRefresh = () => {
 		this.setState({ refreshing: true });
-		this.componentDidMount().then(() => {
+		this.getData().then(() => {
 			this.setState({ refreshing: false });
 		});
 	};
@@ -161,6 +175,8 @@ class AccountPage extends Component {
 	render() {
 		const { userData, isLoading, userReviews, reFetch } = this.state;
 		const nav = this.props.navigation;
+		const { navigation } = this.props;
+
 		return (
 			<View style={styles.container}>
 				<ScrollView
@@ -175,13 +191,13 @@ class AccountPage extends Component {
 							<Title style={styles.titlePage}>Your account details</Title>
 							<Card style={styles.spaceCard}>
 								<Paragraph style={styles.cardParagraph}>
-									First name: {userData.first_name}
+									First name: {userData?.first_name}
 								</Paragraph>
 								<Paragraph style={styles.cardParagraph}>
-									Last name: {userData.last_name}
+									Last name: {userData?.last_name}
 								</Paragraph>
 								<Paragraph style={styles.cardParagraph}>
-									Email address: {userData.email}
+									Email address: {userData?.email}
 								</Paragraph>
 							</Card>
 							<View style={styles.containerRow}>

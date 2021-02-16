@@ -197,6 +197,62 @@ class ReviewPageLikes extends Component {
 		}
 	};
 
+	addLike = async () => {
+		const { navigation } = this.props;
+		const { route } = this.props;
+		const { shopId, reviewId } = route.params;
+
+		const token = await AsyncStorage.getItem('session_token');
+
+		return fetch(`${global.BASE_URL}/location/${shopId}/review/${reviewId}/like`, {
+			method: 'post',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Authorization': token,
+			},
+		})
+			.then((response) => {
+				if (response.status === 200) {
+					navigation.goBack();
+				} else {
+					Alert.alert(`There has been an unknown error from the server.`);
+				}
+			})
+			.catch((error) => {
+				console.log(error + 'Account page error');
+				Alert.alert(`There has been an unknown error from the server.`);
+			});
+	};
+
+	removeLike = async () => {
+		const { navigation } = this.props;
+		const { route } = this.props;
+		const { shopId, reviewId } = route.params;
+
+		const token = await AsyncStorage.getItem('session_token');
+
+		return fetch(`${global.BASE_URL}/location/${shopId}/review/${reviewId}/like`, {
+			method: 'delete',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Authorization': token,
+			},
+		})
+			.then((response) => {
+				if (response.status === 200) {
+					navigation.goBack();
+				} else {
+					Alert.alert(`There has been an unknown error from the server.`);
+				}
+			})
+			.catch((error) => {
+				console.log(error + 'Account page error');
+				Alert.alert(`There has been an unknown error from the server.`);
+			});
+
+	};
+	
+
 	_onRefresh = () => {
 		this.setState({ refreshing: true });
 		this.componentDidMount().then(() => {
@@ -239,11 +295,13 @@ class ReviewPageLikes extends Component {
 								<Button
 									icon='thumb-up'
 									compact={true}
-									mode='contained'></Button>
+									mode='contained'
+									onPress={() => this.addLike()}></Button>
 								<Button
 									icon='thumb-down'
 									compact={true}
-									mode='contained'></Button>
+									mode='contained'
+									onPress={() => this.removeLike()}></Button>
 							</View>
 						</Card.Content>
 					</Card>

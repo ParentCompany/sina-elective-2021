@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Alert, View, StyleSheet, ScrollView, Text } from 'react-native';
+import { Alert, View, StyleSheet, ScrollView, Text, RefreshControl } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
     Button,
@@ -76,7 +76,7 @@ class ShopPage extends Component {
         const userId = await AsyncStorage.getItem('user_id');
 
         if (token === null || token === undefined || token === '' || token === []) {
-            navigation.push('SignupPage');
+            navigation.push('AccountPage');
         } else if (
             token !== null ||
             token !== undefined ||
@@ -88,7 +88,7 @@ class ShopPage extends Component {
         } else {
             console.log('Need to sign in');
             AsyncStorage.clear();
-            navigation.push('LoginPage');
+            navigation.push('AccountPage');
         }
     };
 
@@ -198,15 +198,27 @@ class ShopPage extends Component {
         }
     };
 
+    _onRefresh = () => {
+		this.setState({ refreshing: true });
+		this.componentDidMount().then(() => {
+			this.setState({ refreshing: false });
+		});
+	};
+
     render() {
         const { navigation } = this.props;
         const { shopData, favourite } = this.state;
         const { route } = this.props;
-        const { coverPhoto } = route.params;
+        const { coverPhoto, shopId } = route.params;
 
         return (
             <View style={styles.container}>
-                <ScrollView>
+                <ScrollView refreshControl={
+						<RefreshControl
+							refreshing={this.state.refreshing}
+							onRefresh={this._onRefresh}
+						/>
+					}>
                     <Card style={styles.ratingSpace}>
                         <Card.Title
                             title={shopData.location_name}
@@ -265,6 +277,7 @@ class ShopPage extends Component {
                                             reviewId: review.review_id,
                                             reviewLikes: review.likes,
                                             reviewBody: review.review_body,
+                                            shopId: shopId
                                         })
                                     }>
                                     <Avatar.Icon

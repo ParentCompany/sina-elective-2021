@@ -15,8 +15,6 @@ class StackNavigatorAccount extends Component {
         this.state = {}
     };
 
- 
-
     render() {
         return (
             <Stack.Navigator screenOptions={{ headerLeft: null }}>

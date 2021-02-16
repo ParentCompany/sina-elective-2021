@@ -5,16 +5,18 @@ import {
 	StyleSheet,
 	ScrollView,
 	RefreshControl,
+	ToastAndroid
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Button, Card, Title, Paragraph } from 'react-native-paper';
+import { useFocusEffect } from '@react-navigation/native';
 
 class ReviewPage extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
 			shopData: [],
-			refreshing: false,
+			refreshing: false
 		};
 	}
 
@@ -23,13 +25,6 @@ class ReviewPage extends Component {
 			this.setState(state, resolve);
 		});
 	}
-
-	_onRefresh = () => {
-		this.setState({ refreshing: true });
-		this.componentDidMount().then(() => {
-			this.setState({ refreshing: false });
-		});
-	};
 
 	statusCodeHandler = (response) => {
 		const { navigation } = this.props;
@@ -44,7 +39,8 @@ class ReviewPage extends Component {
 				);
 				break;
 			case 401:
-				return navigation.navigate('LoginPage');
+				navigation.navigate('LoginPage', { screen: 'ReviewPage' });
+				break;
 			case 403:
 				Alert.alert(
 					`Please relaunch the application. Status code: ${response.status}`
@@ -68,26 +64,41 @@ class ReviewPage extends Component {
 	};
 
 	componentDidMount = async () => {
+
 		const { navigation } = this.props;
+		const { shopData } = this.state;
+
+		this.ejectComponent = navigation.addListener('focus', () => {
+			this.componentDidMount();
+		})
+
 		const token = await AsyncStorage.getItem('session_token');
 
 		if (token === null || token === undefined || token === '' || token === []) {
-			navigation.push('SignupPage');
+			navigation.navigate('LoginPage', { screen: 'ReviewPage' });
 		} else if (
 			token !== null ||
 			token !== undefined ||
 			token !== '' ||
 			token !== []
-		) {
-			this.getData(token);
+		) { 
+			if(shopData.length === 0 ){
+				this.getData();
+			}
+			
 		} else {
 			console.log('Need to sign in');
 			AsyncStorage.clear();
-			navigation.push('LoginPage');
+			navigation.navigate('LoginPage', { screen: 'ReviewPage' });
 		}
 	};
 
-	getData = async (token) => {
+	componentWillUnmount () {
+		this.ejectComponent()
+	  }
+
+	getData = async () => {
+		const token = await AsyncStorage.getItem('session_token');
 		return fetch(`${global.BASE_URL}/find`, {
 			headers: {
 				'Content-Type': 'application/json',
@@ -104,6 +115,15 @@ class ReviewPage extends Component {
 				Alert.alert(`There has been an unknown error from the server.`);
 			});
 	};
+
+	
+	_onRefresh = () => {
+		this.setState({ refreshing: true });
+		this.getData().then(() => {
+			this.setState({ refreshing: false });
+		});
+	};
+
 
 	render() {
 		const { navigation } = this.props;
