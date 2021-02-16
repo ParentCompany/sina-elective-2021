@@ -9,13 +9,12 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
 	Button,
-	Card,
+	TextInput,
+    Caption,
 	Title,
-	Paragraph,
-	Avatar,
 } from 'react-native-paper';
 
-class ReviewPageLikes extends Component {
+class CreateReviewPage extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -135,8 +134,6 @@ class ReviewPageLikes extends Component {
 	render() {
 		const { navigation } = this.props;
 		const { shopData, favourite } = this.state;
-		const { route } = this.props;
-		const { reviewId, reviewBody, reviewLikes } = route.params;
 
 		return (
 			<View style={styles.container}>
@@ -147,36 +144,17 @@ class ReviewPageLikes extends Component {
 							onRefresh={this._onRefresh}
 						/>
 					}>
-					<Card style={styles.ratingSpace}>
-						<Card.Content>
-							<Title style={styles.ratingSpace}>Review ID: {reviewId}</Title>
-							<View style={styles.reviewRow}>
-								<Avatar.Icon style={styles.avatarIcon} size={24} icon='face' />
-								<Paragraph style={{ flex: 1, flexWrap: 'wrap' }}>
-									{reviewBody}
-								</Paragraph>
-								<Button
-									icon='thumb-up'
-									compact={true}
-									disabled={true}
-									mode='text'>
-									{reviewLikes}
-								</Button>
-							</View>
-							<View style={styles.reviewRowLikes}>
-								<Button
-									icon='thumb-up'
-									compact={true}
-									mode='contained'
-									onPress={() => this.addLike()}></Button>
-								<Button
-									icon='thumb-down'
-									compact={true}
-									mode='contained'
-									onPress={() => this.removeLike()}></Button>
-							</View>
-						</Card.Content>
-					</Card>
+					
+                <Title style={styles.titlePage}>Write your review</Title>
+                <TextInput
+                    style={styles.textInput}
+                    placeholder='Email'
+                    autoCapitalize="none"
+                    onChangeText={value => this.onChangeText('email', value)}
+                />
+                <Button style={styles.loginButton} mode="contained" onPress={this.logIn}>
+                    Submit
+  </Button>
 				</ScrollView>
 			</View>
 		);
@@ -185,7 +163,6 @@ class ReviewPageLikes extends Component {
 
 const styles = StyleSheet.create({
 	titlePage: {
-		marginHorizontal: 10,
 		marginVertical: 20,
 	},
 	rowContainer: {
@@ -230,6 +207,9 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 		alignItems: 'center',
 	},
+    textInput: {
+        marginVertical: 10
+    },
 });
 
-export default ReviewPageLikes;
+export default CreateReviewPage;

@@ -10,7 +10,7 @@ import {
     IconButton,
     Colors,
     ProgressBar,
-    Caption,
+    Caption
 } from 'react-native-paper';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
@@ -219,6 +219,9 @@ class ShopPage extends Component {
 							onRefresh={this._onRefresh}
 						/>
 					}>
+                        <Button style={styles.ratingSpace} icon="pencil" mode="contained" onPress={() => navigation.navigate('CreateReviewPage', { shopId: shopId })}>
+    Add Review
+  </Button>
                     <Card style={styles.ratingSpace}>
                         <Card.Title
                             title={shopData.location_name}
@@ -297,6 +300,8 @@ class ShopPage extends Component {
                                     </Button>
                                 </TouchableOpacity>
                             ))}
+
+
                         </Card.Content>
                     </Card>
                 </ScrollView>
@@ -345,7 +350,7 @@ const styles = StyleSheet.create({
     },
     avatarIcon: {
         marginRight: 15,
-    },
+    }
 });
 
 export default ShopPage;

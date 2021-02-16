@@ -233,9 +233,6 @@ class AccountPage extends Component {
 									<Paragraph style={styles.cardParagraph}>
 										Review: {review.review.review_body}
 									</Paragraph>
-									<Card.Actions>
-										<Button mode='text'>Open</Button>
-									</Card.Actions>
 								</Card>
 							))}
 							<Divider style={styles.dividerSpace} />
@@ -248,9 +245,6 @@ class AccountPage extends Component {
 									<Paragraph style={styles.cardParagraph}>
 										Coffee Shop Town: {favourite.location_town}
 									</Paragraph>
-									<Card.Actions>
-										<Button mode='text'>Open</Button>
-									</Card.Actions>
 								</Card>
 							))}
 						</View>
