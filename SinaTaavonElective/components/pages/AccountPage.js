@@ -5,7 +5,7 @@ import {
 	Paragraph,
 	Card,
 	ActivityIndicator,
-	Divider,
+	Divider
 } from 'react-native-paper';
 import {
 	View,
@@ -13,6 +13,7 @@ import {
 	ScrollView,
 	Alert,
 	RefreshControl,
+	ToastAndroid
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -112,7 +113,7 @@ class AccountPage extends Component {
 			token !== '' ||
 			token !== []
 		) { 
-			if(userData.length === 0){
+			if(userData.length === 0 || userData === undefined){
 				this.getData(token);
 			}
 
@@ -172,9 +173,34 @@ class AccountPage extends Component {
 		});
 	};
 
+	removeReview = async (shopId, reviewId) => {
+		const { navigation } = this.props;
+
+		const token = await AsyncStorage.getItem('session_token');
+
+		return fetch(`${global.BASE_URL}/location/${shopId}/review/${reviewId}`, {
+			method: 'delete',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Authorization': token,
+			},
+		})
+			.then((response) => {
+				if (response.status === 200) {
+					ToastAndroid.show("Review has been deleted", ToastAndroid.SHORT);
+					this.getData();
+				} else if (response.status === 403) {
+					Alert.alert(`Forbidden request.`);
+				}
+			})
+			.catch((error) => {
+				console.log(error + 'Account page error');
+			});
+
+	};
+
 	render() {
 		const { userData, isLoading, userReviews, reFetch } = this.state;
-		const nav = this.props.navigation;
 		const { navigation } = this.props;
 
 		return (
@@ -213,7 +239,7 @@ class AccountPage extends Component {
 									compact='true'
 									mode='contained'
 									onPress={() =>
-										nav.navigate('AccountDetailsUpdatePage', {
+										navigation.navigate('AccountDetailsUpdatePage', {
 											reFetch: 'notUpdated',
 										})
 									}>
@@ -233,6 +259,31 @@ class AccountPage extends Component {
 									<Paragraph style={styles.cardParagraph}>
 										Review: {review.review.review_body}
 									</Paragraph>
+									<View style={styles.containerRowButtons}>
+									<Button
+									style={styles.cardParagraph}
+									icon='comment-edit'
+									compact={true}
+									mode='contained'
+									onPress={() =>
+										navigation.navigate('EditReviewPage', {
+											shopId: review.location.location_id,
+											reviewId: review.review.review_id,
+											reviewBody: review.review.review_body,
+											reviewOverall: review.review.overall_rating,
+											reviewPrice: review.review.price_rating,
+											reviewCleanliness: review.review.clenliness_rating,
+											reviewQuality: review.review.quality_rating,
+										})
+									}></Button>
+									<Button
+									style={styles.cardParagraph}
+									icon='delete'
+									compact={true}
+									mode='contained'
+									onPress={() => this.removeReview(review.location.location_id, review.review.review_id)}></Button>
+									</View>
+									
 								</Card>
 							))}
 							<Divider style={styles.dividerSpace} />
@@ -290,6 +341,10 @@ const styles = StyleSheet.create({
 	cardParagraph: {
 		marginVertical: 10,
 	},
+	containerRowButtons: {
+		flexDirection: 'row',
+		justifyContent: 'space-between'
+	}
 });
 
 export default AccountPage;

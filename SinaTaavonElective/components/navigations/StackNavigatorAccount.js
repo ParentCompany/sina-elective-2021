@@ -6,6 +6,7 @@ import LoginPage from '../pages/LoginPage';
 import AccountPage from '../pages/AccountPage';
 import AccountDetailsUpdatePage from '../pages/AccountDetailsUpdatePage';
 import { NavigationContainer } from '@react-navigation/native';
+import EditReviewPage from '../pages/EditReviewPage';
 
 const Stack = createStackNavigator();
 
@@ -22,6 +23,7 @@ class StackNavigatorAccount extends Component {
                 <Stack.Screen name="AccountDetailsUpdatePage" component={AccountDetailsUpdatePage} />
                 <Stack.Screen name="SignupPage" component={SignupPage} />
                 <Stack.Screen name="LoginPage" component={LoginPage} />
+                <Stack.Screen name="EditReviewPage" component={EditReviewPage} />
             </Stack.Navigator>
         );
     }

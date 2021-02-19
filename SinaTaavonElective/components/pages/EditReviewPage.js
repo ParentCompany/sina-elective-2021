@@ -5,6 +5,7 @@ import {
 	StyleSheet,
 	ScrollView,
 	RefreshControl,
+	ToastAndroid
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
@@ -19,7 +20,7 @@ import {
 import { AirbnbRating } from 'react-native-ratings';
 
 
-class CreateReviewPage extends Component {
+class EditReviewPage extends Component {
 	constructor(props) {
 		super(props);
 		this.state = {
@@ -27,10 +28,10 @@ class CreateReviewPage extends Component {
 			favourite: false,
 			userData: {},
 			refreshing: false,
-			overall: 0,
-			quality: 0,
-			price: 0,
-			cleanliness: 0,
+			reviewOverall: 0,
+			reviewQuality: 0,
+			reviewPrice: 0,
+			reviewCleanliness: 0,
 			reviewBody: ''
 		};
 	}
@@ -45,6 +46,12 @@ class CreateReviewPage extends Component {
 		this.setState({ [key]: value })
 	}
 
+	componentDidMount = () => {
+		const { route } = this.props;
+		const { reviewOverall, reviewQuality, reviewCleanliness, reviewPrice, reviewBody } = route.params;
+		this.setState({reviewOverall: reviewOverall, reviewQuality: reviewQuality, reviewCleanliness: reviewCleanliness, reviewPrice: reviewPrice, reviewBody: reviewBody})
+
+	}
 
 	statusCodeHandler = (response) => {
 		switch (response.status) {
@@ -82,21 +89,18 @@ class CreateReviewPage extends Component {
 		}
 	};
 
-
-
-	addReview = async () => {
+	editReview = async () => {
 		const { navigation } = this.props;
 		const { route } = this.props;
-		const { shopId } = route.params;
-		const { overall, quality, cleanliness, price, reviewBody } = this.state;
+		const { reviewId, shopId } = route.params;
+		const { reviewOverall, reviewQuality, reviewCleanliness, reviewPrice, reviewBody } = this.state;
 
 		const token = await AsyncStorage.getItem('session_token');
 
-		let payload = { overall_rating: overall, price_rating: price, quality_rating: quality, clenliness_rating: cleanliness, review_body: reviewBody }
+		let payload = { overall_rating: reviewOverall, price_rating: reviewPrice, quality_rating: reviewQuality, clenliness_rating: reviewCleanliness, review_body: reviewBody }
 
-		console.log(payload)
-		return fetch(`${global.BASE_URL}/location/${shopId}/review`, {
-			method: 'post',
+		return fetch(`${global.BASE_URL}/location/${shopId}/review/${reviewId}`, {
+			method: 'patch',
 			headers: {
 				'Content-Type': 'application/json',
 				'X-Authorization': token,
@@ -104,35 +108,9 @@ class CreateReviewPage extends Component {
 			body: JSON.stringify(payload)
 		})
 			.then((response) => {
-				if (response.status === 201) {
-					navigation.goBack();
-				} else {
-					Alert.alert(`There has been an unknown error from the server.`);
-				}
-			})
-			.catch((error) => {
-				console.log(error + 'Account page error');
-				Alert.alert(`There has been an unknown error from the server.`);
-			});
-	};
-
-	removeLike = async () => {
-		const { navigation } = this.props;
-		const { route } = this.props;
-		const { shopId, reviewId } = route.params;
-
-		const token = await AsyncStorage.getItem('session_token');
-
-		return fetch(`${global.BASE_URL}/location/${shopId}/review/${reviewId}/like`, {
-			method: 'delete',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Authorization': token,
-			},
-		})
-			.then((response) => {
 				if (response.status === 200) {
-					navigation.goBack();
+					navigation.push('AccountPage');
+					ToastAndroid.show("Review has been edited", ToastAndroid.SHORT);
 				} else {
 					Alert.alert(`There has been an unknown error from the server.`);
 				}
@@ -141,82 +119,69 @@ class CreateReviewPage extends Component {
 				console.log(error + 'Account page error');
 				Alert.alert(`There has been an unknown error from the server.`);
 			});
-
 	};
 
 
-	_onRefresh = () => {
-		this.setState({ refreshing: true });
-		this.componentDidMount().then(() => {
-			this.setState({ refreshing: false });
-		});
-	};
+	
+
 
 	render() {
-		const { navigation } = this.props;
-		const { overall, quality, cleanliness, price, reviewBody } = this.state;
+		const { route } = this.props;
+        const { reviewOverall, reviewQuality, reviewCleanliness, reviewPrice, reviewBody } = this.state;
 
 		return (
 			<View style={styles.container}>
-				<ScrollView
-					refreshControl={
-						<RefreshControl
-							refreshing={this.state.refreshing}
-							onRefresh={this._onRefresh}
-						/>
-					}>
-
+				<ScrollView>
 					<Title style={styles.titlePage}>Write your review</Title>
 					<View style={styles.rowContainer}>
 						<Paragraph>Overall: </Paragraph>
 						<AirbnbRating
-							onFinishRating={(overall) => this.setState({ overall })}
+							onFinishRating={(reviewOverall) => this.setState({ reviewOverall })}
 							showRating={false}
 							count={5}
-							defaultRating={overall}
+							defaultRating={reviewOverall}
 							size={20}
 						/>
 					</View>
 					<View style={styles.rowContainer}>
 						<Paragraph>Price: </Paragraph>
 						<AirbnbRating
-							onFinishRating={(price) => this.setState({ price })}
+							onFinishRating={(reviewPrice) => this.setState({ reviewPrice })}
 							showRating={false}
 							count={5}
-							defaultRating={price}
+							defaultRating={reviewPrice}
 							size={20}
 						/>
 					</View>
 					<View style={styles.rowContainer}>
 						<Paragraph>Quality: </Paragraph>
 						<AirbnbRating
-							onFinishRating={(quality) => this.setState({ quality })}
+							onFinishRating={(reviewQuality) => this.setState({ reviewQuality })}
 							showRating={false}
 							count={5}
-							defaultRating={quality}
+							defaultRating={reviewQuality}
 							size={20}
 						/>
 					</View>
 					<View style={styles.rowContainer}>
 						<Paragraph>Cleanliness: </Paragraph>
 						<AirbnbRating
-							onFinishRating={(cleanliness) => this.setState({ cleanliness })}
+							onFinishRating={(reviewCleanliness) => this.setState({ reviewCleanliness })}
 							showRating={false}
 							count={5}
-							defaultRating={cleanliness}
+							defaultRating={reviewCleanliness}
 							size={20}
 						/>
 					</View>
 
 					<TextInput
 						style={styles.textInput}
-						placeholder='Write your review here'
+						placeholder={reviewBody}
 						autoCapitalize="none"
 						multiline
-						value={reviewBody}
-						onChangeText={value => this.onChangeText('reviewBody', value)}
+						onChangeText={(reviewBody) => this.setState({reviewBody})}
 					/>
-					<Button style={styles.loginButton} mode="contained" onPress={this.addReview}>
+					<Button style={styles.loginButton} mode="contained" onPress={() => this.editReview()}>
 						Submit
   </Button>
 				</ScrollView>
@@ -277,4 +242,4 @@ const styles = StyleSheet.create({
 	},
 });
 
-export default CreateReviewPage;
+export default EditReviewPage;
