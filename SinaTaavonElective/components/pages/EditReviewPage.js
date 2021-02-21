@@ -1,28 +1,27 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
 	Alert,
 	View,
 	StyleSheet,
 	ScrollView,
 	RefreshControl,
-	ToastAndroid
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+	ToastAndroid,
+} from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
 	Button,
 	TextInput,
 	Caption,
 	Title,
 	ToggleButton,
-	Paragraph
-} from 'react-native-paper';
+	Paragraph,
+} from 'react-native-paper'
 
-import { AirbnbRating } from 'react-native-ratings';
-
+import { AirbnbRating } from 'react-native-ratings'
 
 class EditReviewPage extends Component {
 	constructor(props) {
-		super(props);
+		super(props)
 		this.state = {
 			shopData: {},
 			favourite: false,
@@ -32,14 +31,14 @@ class EditReviewPage extends Component {
 			reviewQuality: 0,
 			reviewPrice: 0,
 			reviewCleanliness: 0,
-			reviewBody: ''
-		};
+			reviewBody: '',
+		}
 	}
 
 	setStateAsync(state) {
 		return new Promise((resolve) => {
-			this.setState(state, resolve);
-		});
+			this.setState(state, resolve)
+		})
 	}
 
 	onChangeText = (key, value) => {
@@ -47,87 +46,117 @@ class EditReviewPage extends Component {
 	}
 
 	componentDidMount = () => {
-		const { route } = this.props;
-		const { reviewOverall, reviewQuality, reviewCleanliness, reviewPrice, reviewBody } = route.params;
-		this.setState({reviewOverall: reviewOverall, reviewQuality: reviewQuality, reviewCleanliness: reviewCleanliness, reviewPrice: reviewPrice, reviewBody: reviewBody})
-
+		const { route } = this.props
+		const {
+			reviewOverall,
+			reviewQuality,
+			reviewCleanliness,
+			reviewPrice,
+			reviewBody,
+		} = route.params
+		this.setState({
+			reviewOverall: reviewOverall,
+			reviewQuality: reviewQuality,
+			reviewCleanliness: reviewCleanliness,
+			reviewPrice: reviewPrice,
+			reviewBody: reviewBody,
+		})
 	}
 
 	statusCodeHandler = (response) => {
 		switch (response.status) {
 			case 200:
-				return response.json();
+				return response.json()
 			case 201:
-				return response.json();
+				return response.json()
 			case 400:
 				Alert.alert(
 					`There has been an error in retreving your request. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 401:
-				Alert.alert(`Please go to account page to login ${response.status}`);
-				break;
+				Alert.alert(
+					`Please go to account page to login ${response.status}`
+				)
+				break
 			case 403:
 				Alert.alert(
 					`Please relaunch the application. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 404:
 				Alert.alert(
 					`Request has not been found. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 500:
 				Alert.alert(
 					`Please relaunch the application or make sure you are connected to the internet. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			default:
 				console.log(
 					`There has been an unknown error. Status code: ${response.status}.`
-				);
+				)
 		}
-	};
+	}
 
 	editReview = async () => {
-		const { navigation } = this.props;
-		const { route } = this.props;
-		const { reviewId, shopId } = route.params;
-		const { reviewOverall, reviewQuality, reviewCleanliness, reviewPrice, reviewBody } = this.state;
+		const { navigation } = this.props
+		const { route } = this.props
+		const { reviewId, shopId } = route.params
+		const {
+			reviewOverall,
+			reviewQuality,
+			reviewCleanliness,
+			reviewPrice,
+			reviewBody,
+		} = this.state
 
-		const token = await AsyncStorage.getItem('session_token');
+		const token = await AsyncStorage.getItem('session_token')
 
-		let payload = { overall_rating: reviewOverall, price_rating: reviewPrice, quality_rating: reviewQuality, clenliness_rating: reviewCleanliness, review_body: reviewBody }
+		let payload = {
+			overall_rating: reviewOverall,
+			price_rating: reviewPrice,
+			quality_rating: reviewQuality,
+			clenliness_rating: reviewCleanliness,
+			review_body: reviewBody,
+		}
 
-		return fetch(`${global.BASE_URL}/location/${shopId}/review/${reviewId}`, {
-			method: 'patch',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Authorization': token,
-			},
-			body: JSON.stringify(payload)
-		})
+		return fetch(
+			`${global.BASE_URL}/location/${shopId}/review/${reviewId}`,
+			{
+				method: 'patch',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Authorization': token,
+				},
+				body: JSON.stringify(payload),
+			}
+		)
 			.then((response) => {
 				if (response.status === 200) {
-					navigation.push('AccountPage');
-					ToastAndroid.show("Review has been edited", ToastAndroid.SHORT);
+					navigation.push('AccountPage')
+					ToastAndroid.show('Review has been edited', ToastAndroid.SHORT)
 				} else {
-					Alert.alert(`There has been an unknown error from the server.`);
+					Alert.alert(`There has been an unknown error from the server.`)
 				}
 			})
 			.catch((error) => {
-				console.log(error + 'Account page error');
-				Alert.alert(`There has been an unknown error from the server.`);
-			});
-	};
-
-
-	
-
+				console.log(error + 'Account page error')
+				Alert.alert(`There has been an unknown error from the server.`)
+			})
+	}
 
 	render() {
-		const { route } = this.props;
-        const { reviewOverall, reviewQuality, reviewCleanliness, reviewPrice, reviewBody } = this.state;
+		const { route } = this.props
+		const {
+			reviewOverall,
+			reviewQuality,
+			reviewCleanliness,
+			reviewPrice,
+			reviewBody,
+		} = this.state
 
 		return (
 			<View style={styles.container}>
@@ -136,7 +165,9 @@ class EditReviewPage extends Component {
 					<View style={styles.rowContainer}>
 						<Paragraph>Overall: </Paragraph>
 						<AirbnbRating
-							onFinishRating={(reviewOverall) => this.setState({ reviewOverall })}
+							onFinishRating={(reviewOverall) =>
+								this.setState({ reviewOverall })
+							}
 							showRating={false}
 							count={5}
 							defaultRating={reviewOverall}
@@ -156,7 +187,9 @@ class EditReviewPage extends Component {
 					<View style={styles.rowContainer}>
 						<Paragraph>Quality: </Paragraph>
 						<AirbnbRating
-							onFinishRating={(reviewQuality) => this.setState({ reviewQuality })}
+							onFinishRating={(reviewQuality) =>
+								this.setState({ reviewQuality })
+							}
 							showRating={false}
 							count={5}
 							defaultRating={reviewQuality}
@@ -166,7 +199,9 @@ class EditReviewPage extends Component {
 					<View style={styles.rowContainer}>
 						<Paragraph>Cleanliness: </Paragraph>
 						<AirbnbRating
-							onFinishRating={(reviewCleanliness) => this.setState({ reviewCleanliness })}
+							onFinishRating={(reviewCleanliness) =>
+								this.setState({ reviewCleanliness })
+							}
 							showRating={false}
 							count={5}
 							defaultRating={reviewCleanliness}
@@ -177,16 +212,19 @@ class EditReviewPage extends Component {
 					<TextInput
 						style={styles.textInput}
 						placeholder={reviewBody}
-						autoCapitalize="none"
+						autoCapitalize='none'
 						multiline
-						onChangeText={(reviewBody) => this.setState({reviewBody})}
+						onChangeText={(reviewBody) => this.setState({ reviewBody })}
 					/>
-					<Button style={styles.loginButton} mode="contained" onPress={() => this.editReview()}>
+					<Button
+						style={styles.loginButton}
+						mode='contained'
+						onPress={() => this.editReview()}>
 						Submit
-  </Button>
+					</Button>
 				</ScrollView>
 			</View>
-		);
+		)
 	}
 }
 
@@ -196,7 +234,7 @@ const styles = StyleSheet.create({
 	},
 	rowContainer: {
 		flexDirection: 'row',
-		marginVertical: 10
+		marginVertical: 10,
 	},
 	spaceCard: {
 		marginVertical: 15,
@@ -238,8 +276,8 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 	},
 	textInput: {
-		marginVertical: 10
+		marginVertical: 10,
 	},
-});
+})
 
-export default EditReviewPage;
+export default EditReviewPage

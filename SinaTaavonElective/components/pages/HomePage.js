@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
 	Alert,
 	View,
@@ -6,7 +6,7 @@ import {
 	ScrollView,
 	RefreshControl,
 	ToastAndroid,
-} from 'react-native';
+} from 'react-native'
 import {
 	Button,
 	Card,
@@ -15,56 +15,56 @@ import {
 	Avatar,
 	Colors,
 	ProgressBar,
-} from 'react-native-paper';
+} from 'react-native-paper'
 
 class HomePage extends Component {
 	constructor(props) {
-		super(props);
-		this.state = { isLoading: true, locData: {}, refreshing: false };
+		super(props)
+		this.state = { isLoading: true, locData: {}, refreshing: false }
 	}
 
 	statusCodeHandler = (response) => {
-		const { navigation } = this.props;
+		const { navigation } = this.props
 		switch (response.status) {
 			case 200:
-				return response.json();
+				return response.json()
 			case 201:
-				return response.json();
+				return response.json()
 			case 400:
 				Alert.alert(
 					`There has been an error in retreving your request. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 401:
-				return navigation.navigate('LoginPage');
+				return navigation.navigate('LoginPage')
 			case 403:
 				Alert.alert(
 					`Please relaunch the application. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 404:
 				Alert.alert(
 					`Request has not been found. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 500:
 				Alert.alert(
 					`Please relaunch the application or make sure you are connected to the internet. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			default:
 				console.log(
 					`There has been an unknown error. Status code: ${response.status}.`
-				);
+				)
 		}
-	};
+	}
 
 	componentDidMount = () => {
-		this.getData();
-	};
+		this.getData()
+	}
 
 	getData = () => {
-		const locId = Math.floor(Math.random() * 5) + 1;
+		const locId = Math.floor(Math.random() * 5) + 1
 		return fetch(`${global.BASE_URL}/location/${locId}`, {
 			headers: {
 				'Content-Type': 'application/json',
@@ -72,25 +72,28 @@ class HomePage extends Component {
 		})
 			.then((response) => this.statusCodeHandler(response))
 			.then((responseJson) => {
-				this.setState({ locData: responseJson });
-				this.setState({ isLoading: false });
-				ToastAndroid.show('Coffee Shop has been updated', ToastAndroid.SHORT);
+				this.setState({ locData: responseJson })
+				this.setState({ isLoading: false })
+				ToastAndroid.show(
+					'Coffee Shop has been updated',
+					ToastAndroid.SHORT
+				)
 			})
 			.catch((error) => {
-				console.log(error + 'Account page error');
-				Alert.alert(`There has been an unknown error from the server.`);
-			});
-	};
+				console.log(error + 'Account page error')
+				Alert.alert(`There has been an unknown error from the server.`)
+			})
+	}
 
 	_onRefresh = () => {
-		this.setState({ refreshing: true });
+		this.setState({ refreshing: true })
 		this.getData().then(() => {
-			this.setState({ refreshing: false });
-		});
-	};
+			this.setState({ refreshing: false })
+		})
+	}
 
 	render() {
-		const { locData } = this.state;
+		const { locData } = this.state
 
 		return (
 			<View style={styles.container}>
@@ -130,7 +133,9 @@ class HomePage extends Component {
 								progress={locData.avg_overall_rating / 5}
 								color={Colors.purple700}
 							/>
-							<Paragraph style={styles.ratingSpace}>Avg Price Rating</Paragraph>
+							<Paragraph style={styles.ratingSpace}>
+								Avg Price Rating
+							</Paragraph>
 							<ProgressBar
 								progress={locData.avg_price_rating / 5}
 								color={Colors.purple700}
@@ -173,7 +178,7 @@ class HomePage extends Component {
 					</Card>
 				</ScrollView>
 			</View>
-		);
+		)
 	}
 }
 
@@ -218,6 +223,6 @@ const styles = StyleSheet.create({
 	avatarIcon: {
 		marginRight: 15,
 	},
-});
+})
 
-export default HomePage;
+export default HomePage

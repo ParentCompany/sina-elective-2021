@@ -1,142 +1,147 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
 	Alert,
 	View,
 	StyleSheet,
 	ScrollView,
 	RefreshControl,
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+} from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
 	Button,
 	Card,
 	Title,
 	Paragraph,
 	Avatar,
-} from 'react-native-paper';
+} from 'react-native-paper'
 
 class ReviewPageLikes extends Component {
 	constructor(props) {
-		super(props);
+		super(props)
 		this.state = {
 			shopData: {},
 			favourite: false,
 			userData: {},
 			refreshing: false,
-		};
+		}
 	}
 
 	setStateAsync(state) {
 		return new Promise((resolve) => {
-			this.setState(state, resolve);
-		});
+			this.setState(state, resolve)
+		})
 	}
 
 	statusCodeHandler = (response) => {
 		switch (response.status) {
 			case 200:
-				return response.json();
+				return response.json()
 			case 201:
-				return response.json();
+				return response.json()
 			case 400:
 				Alert.alert(
 					`There has been an error in retreving your request. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 401:
-				Alert.alert(`Please go to account page to login ${response.status}`);
-				break;
+				Alert.alert(
+					`Please go to account page to login ${response.status}`
+				)
+				break
 			case 403:
 				Alert.alert(
 					`Please relaunch the application. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 404:
 				Alert.alert(
 					`Request has not been found. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 500:
 				Alert.alert(
 					`Please relaunch the application or make sure you are connected to the internet. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			default:
 				console.log(
 					`There has been an unknown error. Status code: ${response.status}.`
-				);
+				)
 		}
-	};
-
+	}
 
 	addLike = async () => {
-		const { navigation } = this.props;
-		const { route } = this.props;
-		const { shopId, reviewId } = route.params;
+		const { navigation } = this.props
+		const { route } = this.props
+		const { shopId, reviewId } = route.params
 
-		const token = await AsyncStorage.getItem('session_token');
+		const token = await AsyncStorage.getItem('session_token')
 
-		return fetch(`${global.BASE_URL}/location/${shopId}/review/${reviewId}/like`, {
-			method: 'post',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Authorization': token,
-			},
-		})
+		return fetch(
+			`${global.BASE_URL}/location/${shopId}/review/${reviewId}/like`,
+			{
+				method: 'post',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Authorization': token,
+				},
+			}
+		)
 			.then((response) => {
 				if (response.status === 200) {
-					navigation.goBack();
+					navigation.goBack()
 				} else {
-					Alert.alert(`There has been an unknown error from the server.`);
+					Alert.alert(`There has been an unknown error from the server.`)
 				}
 			})
 			.catch((error) => {
-				console.log(error + 'Account page error');
-				Alert.alert(`There has been an unknown error from the server.`);
-			});
-	};
+				console.log(error + 'Account page error')
+				Alert.alert(`There has been an unknown error from the server.`)
+			})
+	}
 
 	removeLike = async () => {
-		const { navigation } = this.props;
-		const { route } = this.props;
-		const { shopId, reviewId } = route.params;
+		const { navigation } = this.props
+		const { route } = this.props
+		const { shopId, reviewId } = route.params
 
-		const token = await AsyncStorage.getItem('session_token');
+		const token = await AsyncStorage.getItem('session_token')
 
-		return fetch(`${global.BASE_URL}/location/${shopId}/review/${reviewId}/like`, {
-			method: 'delete',
-			headers: {
-				'Content-Type': 'application/json',
-				'X-Authorization': token,
-			},
-		})
+		return fetch(
+			`${global.BASE_URL}/location/${shopId}/review/${reviewId}/like`,
+			{
+				method: 'delete',
+				headers: {
+					'Content-Type': 'application/json',
+					'X-Authorization': token,
+				},
+			}
+		)
 			.then((response) => {
 				if (response.status === 200) {
-					navigation.goBack();
+					navigation.goBack()
 				} else {
-					Alert.alert(`There has been an unknown error from the server.`);
+					Alert.alert(`There has been an unknown error from the server.`)
 				}
 			})
 			.catch((error) => {
-				console.log(error + 'Account page error');
-				Alert.alert(`There has been an unknown error from the server.`);
-			});
-
-	};
-	
+				console.log(error + 'Account page error')
+				Alert.alert(`There has been an unknown error from the server.`)
+			})
+	}
 
 	_onRefresh = () => {
-		this.setState({ refreshing: true });
+		this.setState({ refreshing: true })
 		this.componentDidMount().then(() => {
-			this.setState({ refreshing: false });
-		});
-	};
+			this.setState({ refreshing: false })
+		})
+	}
 
 	render() {
-		const { navigation } = this.props;
-		const { shopData, favourite } = this.state;
-		const { route } = this.props;
-		const { reviewId, reviewBody, reviewLikes } = route.params;
+		const { navigation } = this.props
+		const { shopData, favourite } = this.state
+		const { route } = this.props
+		const { reviewId, reviewBody, reviewLikes } = route.params
 
 		return (
 			<View style={styles.container}>
@@ -151,7 +156,11 @@ class ReviewPageLikes extends Component {
 						<Card.Content>
 							<Title style={styles.ratingSpace}>Review ID: {reviewId}</Title>
 							<View style={styles.reviewRow}>
-								<Avatar.Icon style={styles.avatarIcon} size={24} icon='face' />
+								<Avatar.Icon
+									style={styles.avatarIcon}
+									size={24}
+									icon='face'
+								/>
 								<Paragraph style={{ flex: 1, flexWrap: 'wrap' }}>
 									{reviewBody}
 								</Paragraph>
@@ -179,7 +188,7 @@ class ReviewPageLikes extends Component {
 					</Card>
 				</ScrollView>
 			</View>
-		);
+		)
 	}
 }
 
@@ -230,6 +239,6 @@ const styles = StyleSheet.create({
 		marginTop: 20,
 		alignItems: 'center',
 	},
-});
+})
 
-export default ReviewPageLikes;
+export default ReviewPageLikes

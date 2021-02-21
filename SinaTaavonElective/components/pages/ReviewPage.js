@@ -1,104 +1,107 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
 	Alert,
 	View,
 	StyleSheet,
 	ScrollView,
 	RefreshControl,
-	ToastAndroid
-} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Button, Card, Title, Paragraph } from 'react-native-paper';
-import { useFocusEffect } from '@react-navigation/native';
+	ToastAndroid,
+} from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Button, Card, Title, Paragraph } from 'react-native-paper'
+import { useFocusEffect } from '@react-navigation/native'
 
 class ReviewPage extends Component {
 	constructor(props) {
-		super(props);
+		super(props)
 		this.state = {
 			shopData: [],
-			refreshing: false
-		};
+			refreshing: false,
+		}
 	}
 
 	setStateAsync(state) {
 		return new Promise((resolve) => {
-			this.setState(state, resolve);
-		});
+			this.setState(state, resolve)
+		})
 	}
 
 	statusCodeHandler = (response) => {
-		const { navigation } = this.props;
+		const { navigation } = this.props
 		switch (response.status) {
 			case 200:
-				return response.json();
+				return response.json()
 			case 201:
-				return response.json();
+				return response.json()
 			case 400:
 				Alert.alert(
 					`There has been an error in retreving your request. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 401:
-				navigation.navigate('LoginPage', { screen: 'ReviewPage' });
-				break;
+				navigation.navigate('LoginPage', { screen: 'ReviewPage' })
+				break
 			case 403:
 				Alert.alert(
 					`Please relaunch the application. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 404:
 				Alert.alert(
 					`Request has not been found. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			case 500:
 				Alert.alert(
 					`Please relaunch the application or make sure you are connected to the internet. Status code: ${response.status}`
-				);
-				break;
+				)
+				break
 			default:
 				console.log(
 					`There has been an unknown error. Status code: ${response.status}.`
-				);
+				)
 		}
-	};
+	}
 
 	componentDidMount = async () => {
-
-		const { navigation } = this.props;
-		const { shopData } = this.state;
+		const { navigation } = this.props
+		const { shopData } = this.state
 
 		this.ejectComponent = navigation.addListener('focus', () => {
-			this.componentDidMount();
+			this.componentDidMount()
 		})
 
-		const token = await AsyncStorage.getItem('session_token');
+		const token = await AsyncStorage.getItem('session_token')
 
-		if (token === null || token === undefined || token === '' || token === []) {
-			navigation.navigate('LoginPage', { screen: 'ReviewPage' });
+		if (
+			token === null ||
+			token === undefined ||
+			token === '' ||
+			token === []
+		) {
+			navigation.navigate('LoginPage', { screen: 'ReviewPage' })
 		} else if (
 			token !== null ||
 			token !== undefined ||
 			token !== '' ||
 			token !== []
-		) { 
-			if(shopData.length === 0 ){
-				this.getData();
+		) {
+			if (shopData.length === 0) {
+				this.getData()
 			}
-			
 		} else {
-			console.log('Need to sign in');
-			AsyncStorage.clear();
-			navigation.navigate('LoginPage', { screen: 'ReviewPage' });
+			console.log('Need to sign in')
+			AsyncStorage.clear()
+			navigation.navigate('LoginPage', { screen: 'ReviewPage' })
 		}
-	};
+	}
 
-	componentWillUnmount () {
+	componentWillUnmount() {
 		this.ejectComponent()
-	  }
+	}
 
 	getData = async () => {
-		const token = await AsyncStorage.getItem('session_token');
+		const token = await AsyncStorage.getItem('session_token')
 		return fetch(`${global.BASE_URL}/find`, {
 			headers: {
 				'Content-Type': 'application/json',
@@ -107,28 +110,26 @@ class ReviewPage extends Component {
 		})
 			.then((response) => this.statusCodeHandler(response))
 			.then(async (responseJson) => {
-				await this.setStateAsync({ shopData: responseJson });
-				this.setState({ isNotLoading: true });
+				await this.setStateAsync({ shopData: responseJson })
+				this.setState({ isNotLoading: true })
 			})
 			.catch((error) => {
-				console.log(error + 'Account page error');
-				Alert.alert(`There has been an unknown error from the server.`);
-			});
-	};
+				console.log(error + 'Account page error')
+				Alert.alert(`There has been an unknown error from the server.`)
+			})
+	}
 
-	
 	_onRefresh = () => {
-		this.setState({ refreshing: true });
+		this.setState({ refreshing: true })
 		this.getData().then(() => {
-			this.setState({ refreshing: false });
-		});
-	};
-
+			this.setState({ refreshing: false })
+		})
+	}
 
 	render() {
-		const { navigation } = this.props;
-		const { shopData } = this.state || {};
-		console.log(shopData);
+		const { navigation } = this.props
+		const { shopData } = this.state || {}
+		console.log(shopData)
 
 		const coverPhoto = [
 			{
@@ -146,7 +147,7 @@ class ReviewPage extends Component {
 			{
 				path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-5.jpg',
 			},
-		];
+		]
 
 		return (
 			<View style={styles.container}>
@@ -181,7 +182,7 @@ class ReviewPage extends Component {
 					))}
 				</ScrollView>
 			</View>
-		);
+		)
 	}
 }
 
@@ -207,6 +208,6 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		justifyContent: 'center',
 	},
-});
+})
 
-export default ReviewPage;
+export default ReviewPage
