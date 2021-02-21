@@ -1,219 +1,217 @@
-/* eslint-disable no-undef */
-/* eslint-disable no-tabs */
-/* eslint-disable react/prop-types */
-import React, { Component } from 'react'
-import { Alert, View, StyleSheet, ScrollView, RefreshControl } from 'react-native'
-import AsyncStorage from '@react-native-async-storage/async-storage'
+import React, { Component } from 'react';
+import { Alert, View, StyleSheet, ScrollView, Text, RefreshControl } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
-  Button,
-  Card,
-  Title,
-  Paragraph,
-  Avatar,
-  IconButton,
-  Colors,
-  ProgressBar,
-  Caption
-} from 'react-native-paper'
-import { TouchableOpacity } from 'react-native-gesture-handler'
+    Button,
+    Card,
+    Title,
+    Paragraph,
+    Avatar,
+    IconButton,
+    Colors,
+    ProgressBar,
+    Caption
+} from 'react-native-paper';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
 class ShopPage extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      shopData: {},
-      favourite: false,
-      userData: {}
+    constructor(props) {
+        super(props);
+        this.state = {
+            shopData: {},
+            favourite: false,
+            userData: {},
+        };
     }
-  }
 
-  setStateAsync (state) {
-    return new Promise((resolve) => {
-      this.setState(state, resolve)
-    })
-  }
+    setStateAsync(state) {
+        return new Promise((resolve) => {
+            this.setState(state, resolve);
+        });
+    }
 
-  statusCodeHandler (response) {
-    switch (response.status) {
-      case 200:
-        return response.json()
-      case 201:
-        return response.json()
-      case 400:
-        Alert.alert(
+    statusCodeHandler = (response) => {
+        const { navigation } = this.props;
+        switch (response.status) {
+            case 200:
+                return response.json();
+            case 201:
+                return response.json();
+            case 400:
+                Alert.alert(
                     `There has been an error in retreving your request. Status code: ${response.status}`
-        )
-        break
-      case 401:
-        Alert.alert(`Please go to account page to login ${response.status}`)
-        break
-      case 403:
-        Alert.alert(
+                );
+                break;
+            case 401:
+                Alert.alert(`Please go to account page to login ${response.status}`);
+                break;
+            case 403:
+                Alert.alert(
                     `Please relaunch the application. Status code: ${response.status}`
-        )
-        break
-      case 404:
-        Alert.alert(
+                );
+                break;
+            case 404:
+                Alert.alert(
                     `Request has not been found. Status code: ${response.status}`
-        )
-        break
-      case 500:
-        Alert.alert(
+                );
+                break;
+            case 500:
+                Alert.alert(
                     `Please relaunch the application or make sure you are connected to the internet. Status code: ${response.status}`
-        )
-        break
-      default:
-        console.log(
+                );
+                break;
+            default:
+                console.log(
                     `There has been an unknown error. Status code: ${response.status}.`
-        )
-    }
-  };
+                );
+        }
+    };
 
-  async componentDidMount () {
-    const { navigation } = this.props
-    const { route } = this.props
-    const { shopId } = route.params
+    componentDidMount = async () => {
+        const { navigation } = this.props;
+        const { route } = this.props;
+        const { shopId } = route.params;
 
-    const token = await AsyncStorage.getItem('session_token')
-    const userId = await AsyncStorage.getItem('user_id')
+        const token = await AsyncStorage.getItem('session_token');
+        const userId = await AsyncStorage.getItem('user_id');
 
-    if (token === null || token === undefined || token === '' || token === []) {
-      navigation.push('AccountPage')
-    } else if (
-      token !== null ||
+        if (token === null || token === undefined || token === '' || token === []) {
+            navigation.push('AccountPage');
+        } else if (
+            token !== null ||
             token !== undefined ||
             token !== '' ||
             token !== []
-    ) {
-      this.getData(token, shopId)
-      this.getUserInfo(token, userId)
-    } else {
-      console.log('Need to sign in')
-      AsyncStorage.clear()
-      navigation.push('AccountPage')
-    }
-  };
-
-  async getData (token, shopId) {
-    return fetch(`${global.BASE_URL}/location/${shopId}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Authorization': token
-      }
-    })
-      .then((response) => this.statusCodeHandler(response))
-      .then(async (responseJson) => {
-        await this.setStateAsync({ shopData: responseJson })
-        this.setState({ isNotLoading: true })
-      })
-      .catch((error) => {
-        console.log(error + 'Account page error')
-        Alert.alert('There has been an unknown error from the server.')
-      })
-  };
-
-  async getUserInfo (token, userId) {
-    console.log(token)
-
-    return fetch(`${global.BASE_URL}/user/${userId}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Authorization': token
-      }
-    })
-      .then((response) => this.statusCodeHandler(response))
-      .then(async (responseJson) => {
-        await this.setStateAsync({ userData: responseJson })
-        this.setState({ isNotLoading: true })
-        this.checkForFavourite()
-      })
-      .catch((error) => {
-        console.log(error + 'Account page error')
-        Alert.alert('There has been an unknown error from the server.')
-      })
-  };
-
-  async checkForFavourite () {
-    const { userData } = this.state
-    const { route } = this.props
-    const { shopId } = route.params
-
-    for (let i = 0; i < userData.favourite_locations.length; i++) {
-      if (userData?.favourite_locations[i].location_id === shopId) {
-        this.setState({ favourite: true })
-      } else {
-        console.log(this.state.favourite)
-      }
-    }
-  };
-
-  async setFavourite () {
-    const { route } = this.props
-    const { shopId } = route.params
-    const { favourite } = this.state
-
-    const token = await AsyncStorage.getItem('session_token')
-    const userId = await AsyncStorage.getItem('user_id')
-
-    if (favourite === true) {
-      return fetch(`${global.BASE_URL}/location/${shopId}/favourite`, {
-        method: 'delete',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Authorization': token
+        ) {
+            this.getData(token, shopId);
+            this.getUserInfo(token, userId);
+        } else {
+            console.log('Need to sign in');
+            AsyncStorage.clear();
+            navigation.push('AccountPage');
         }
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            this.setState({ favourite: false })
-            this.getUserInfo(token, userId)
-          } else {
-            Alert.alert('There has been an unknown error from the server.')
-          }
+    };
+
+    getData = async (token, shopId) => {
+        return fetch(`${global.BASE_URL}/location/${shopId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Authorization': token,
+            },
         })
-        .catch((error) => {
-          console.log(error + 'Account page error')
-          Alert.alert('There has been an unknown error from the server.')
+            .then((response) => this.statusCodeHandler(response))
+            .then(async (responseJson) => {
+                await this.setStateAsync({ shopData: responseJson });
+                this.setState({ isNotLoading: true });
+            })
+            .catch((error) => {
+                console.log(error + 'Account page error');
+                Alert.alert(`There has been an unknown error from the server.`);
+            });
+    };
+
+    getUserInfo = async (token, userId) => {
+        console.log(token);
+
+        return fetch(`${global.BASE_URL}/user/${userId}`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Authorization': token,
+            },
         })
-    } else if (favourite === false) {
-      return fetch(`${global.BASE_URL}/location/${shopId}/favourite`, {
-        method: 'post',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Authorization': token
+            .then((response) => this.statusCodeHandler(response))
+            .then(async (responseJson) => {
+                await this.setStateAsync({ userData: responseJson });
+                this.setState({ isNotLoading: true });
+                this.checkForFavourite();
+            })
+            .catch((error) => {
+                console.log(error + 'Account page error');
+                Alert.alert(`There has been an unknown error from the server.`);
+            });
+    };
+
+    checkForFavourite = async () => {
+        const { userData } = this.state;
+        const { route } = this.props;
+        const { shopId } = route.params;
+
+        for (let i = 0; i < userData.favourite_locations.length; i++) {
+            if (userData?.favourite_locations[i].location_id === shopId) {
+                this.setState({ favourite: true });
+            } else {
+                console.log(this.state.favourite);
+            }
         }
-      })
-        .then((response) => {
-          if (response.status === 200) {
-            this.setState({ favourite: true })
-            this.getUserInfo(token, userId)
-          } else {
-            Alert.alert('There has been an unknown error from the server.')
-          }
-        })
-        .catch((error) => {
-          console.log(error + 'Account page error')
-          Alert.alert('There has been an unknown error from the server.')
-        })
-    } else {
-      console.log('errrrrrrooooooorrrr')
-    }
-  };
+    };
 
-  _onRefresh () {
-    this.setState({ refreshing: true })
-    this.componentDidMount().then(() => {
-      this.setState({ refreshing: false })
-    })
-  };
+    setFavourite = async () => {
+        const { route } = this.props;
+        const { shopId } = route.params;
+        const { favourite } = this.state;
 
-  render () {
-    const { navigation } = this.props
-    const { shopData, favourite } = this.state
-    const { route } = this.props
-    const { coverPhoto, shopId } = route.params
+        const token = await AsyncStorage.getItem('session_token');
+        const userId = await AsyncStorage.getItem('user_id');
 
-    return (
+        if (favourite === true) {
+            return fetch(`${global.BASE_URL}/location/${shopId}/favourite`, {
+                method: 'delete',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Authorization': token,
+                },
+            })
+                .then((response) => {
+                    if (response.status === 200) {
+                        this.setState({ favourite: false });
+                        this.getUserInfo(token, userId);
+                    } else {
+                        Alert.alert(`There has been an unknown error from the server.`);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error + 'Account page error');
+                    Alert.alert(`There has been an unknown error from the server.`);
+                });
+        } else if (favourite === false) {
+            return fetch(`${global.BASE_URL}/location/${shopId}/favourite`, {
+                method: 'post',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Authorization': token,
+                },
+            })
+                .then((response) => {
+                    if (response.status === 200) {
+                        this.setState({ favourite: true });
+                        this.getUserInfo(token, userId);
+                    } else {
+                        Alert.alert(`There has been an unknown error from the server.`);
+                    }
+                })
+                .catch((error) => {
+                    console.log(error + 'Account page error');
+                    Alert.alert(`There has been an unknown error from the server.`);
+                });
+        } else {
+            console.log('errrrrrrooooooorrrr');
+        }
+    };
+
+    _onRefresh = () => {
+		this.setState({ refreshing: true });
+		this.componentDidMount().then(() => {
+			this.setState({ refreshing: false });
+		});
+	};
+
+    render() {
+        const { navigation } = this.props;
+        const { shopData, favourite } = this.state;
+        const { route } = this.props;
+        const { coverPhoto, shopId } = route.params;
+
+        return (
             <View style={styles.container}>
                 <ScrollView refreshControl={
 						<RefreshControl
@@ -235,7 +233,7 @@ class ShopPage extends Component {
                                     icon={favourite ? 'heart' : 'heart-outline'}
                                     color={Colors.purple700}
                                     onPress={() => {
-                                      this.setFavourite()
+                                        this.setFavourite();
                                     }}
                                 />
                             )}
@@ -278,12 +276,12 @@ class ShopPage extends Component {
                                     key={index}
                                     style={styles.reviewRow}
                                     onPress={() =>
-                                      navigation.navigate('ReviewPageLikes', {
-                                        reviewId: review.review_id,
-                                        reviewLikes: review.likes,
-                                        reviewBody: review.review_body,
-                                        shopId: shopId
-                                      })
+                                        navigation.navigate('ReviewPageLikes', {
+                                            reviewId: review.review_id,
+                                            reviewLikes: review.likes,
+                                            reviewBody: review.review_body,
+                                            shopId: shopId
+                                        })
                                     }>
                                     <Avatar.Icon
                                         style={styles.avatarIcon}
@@ -303,55 +301,56 @@ class ShopPage extends Component {
                                 </TouchableOpacity>
                             ))}
 
+
                         </Card.Content>
                     </Card>
                 </ScrollView>
             </View>
-    )
-  }
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-  titlePage: {
-    marginHorizontal: 10,
-    marginVertical: 20
-  },
-  rowContainer: {
-    flexDirection: 'row'
-  },
-  spaceCard: {
-    marginVertical: 15,
-    marginHorizontal: 10
-  },
-  rowCard: {
-    flex: 1,
-    marginHorizontal: 10,
-    justifyContent: 'space-between'
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    marginHorizontal: 10,
-    marginBottom: 15
-  },
-  ratingSpace: {
-    marginVertical: 10
-  },
-  titleRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  reviewRow: {
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    marginTop: 10,
-    alignItems: 'center'
-  },
-  avatarIcon: {
-    marginRight: 15
-  }
-})
+    titlePage: {
+        marginHorizontal: 10,
+        marginVertical: 20,
+    },
+    rowContainer: {
+        flexDirection: 'row',
+    },
+    spaceCard: {
+        marginVertical: 15,
+        marginHorizontal: 10,
+    },
+    rowCard: {
+        flex: 1,
+        marginHorizontal: 10,
+        justifyContent: 'space-between',
+    },
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        marginHorizontal: 10,
+        marginBottom: 15,
+    },
+    ratingSpace: {
+        marginVertical: 10,
+    },
+    titleRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    reviewRow: {
+        flexDirection: 'row',
+        justifyContent: 'flex-start',
+        marginTop: 10,
+        alignItems: 'center',
+    },
+    avatarIcon: {
+        marginRight: 15,
+    }
+});
 
-export default ShopPage
+export default ShopPage;

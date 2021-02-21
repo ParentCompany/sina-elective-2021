@@ -1,18 +1,19 @@
-/* eslint-disable react/prop-types */
-import React, { Component } from 'react'
-import { View, StyleSheet } from 'react-native'
-import { Button, Card } from 'react-native-paper'
+import React, { Component } from 'react';
+import { Alert, View, StyleSheet, ScrollView } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Button, Card, Title, Paragraph } from 'react-native-paper';
+
 
 class SingleCardView extends Component {
-  constructor (props) {
-    super(props)
-    this.state = {}
-  };
+    constructor(props) {
+        super(props);
+        this.state = {}
+    };
 
-  render () {
-    const { navigation } = this.props
-    const { data } = this.props
-    return (
+    render() {
+        const { navigation } = this.props;
+        const { data } = this.props;
+        return (
             <View style={styles.container}>
                 <Card style={styles.spaceCard}>
                     <Card.Title title={data.location_name} subtitle={data.location_town} />
@@ -22,32 +23,32 @@ class SingleCardView extends Component {
                     </Card.Actions>
                 </Card>
             </View>
-    )
-  }
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-  titlePage: {
-    marginHorizontal: 10,
-    marginVertical: 20
-  },
-  rowContainer: {
-    flexDirection: 'row'
-  },
-  spaceCard: {
-    marginVertical: 15,
-    marginHorizontal: 10
-  },
-  rowCard: {
-    flex: 1,
-    marginHorizontal: 10,
-    justifyContent: 'space-between'
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center'
-  }
+    titlePage: {
+        marginHorizontal: 10,
+        marginVertical: 20
+    },
+    rowContainer: {
+        flexDirection: 'row'
+    },
+    spaceCard: {
+        marginVertical: 15,
+        marginHorizontal: 10
+    },
+    rowCard: {
+        flex: 1,
+        marginHorizontal: 10,
+        justifyContent: 'space-between',
+    },
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+    }
 })
 
-export default SingleCardView
+export default SingleCardView;

@@ -1,20 +1,22 @@
-import React, { Component } from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
-import { Searchbar } from 'react-native-paper'
+import React, { Component } from 'react';
+import { Alert, View, StyleSheet, ScrollView } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Searchbar } from 'react-native-paper';
+
 
 class SearchPage extends Component {
-  constructor (props) {
-    super(props)
-    this.state = { searchQuery: '' }
-  };
+    constructor(props) {
+        super(props);
+        this.state = { searchQuery: '' }
+    };
 
-  onChangeSearch (searchQuery) {
-    this.setState({ searchQuery: searchQuery })
-  }
+    onChangeSearch = (searchQuery) => {
+        this.setState({ searchQuery: searchQuery })
+    }
 
-  render () {
-    const { searchQuery } = this.state
-    return (
+    render() {
+        const { searchQuery } = this.state;
+        return (
             <View style={styles.container}>
                 <ScrollView >
                     <Searchbar
@@ -24,20 +26,20 @@ class SearchPage extends Component {
                     />
                 </ScrollView>
             </View>
-    )
-  }
+        );
+    }
 }
 
 const styles = StyleSheet.create({
-  spaceCard: {
-    marginVertical: 15
-  },
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'center',
-    margin: 10
-  }
+    spaceCard: {
+        marginVertical: 15
+    },
+    container: {
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        margin: 10
+    }
 })
 
-export default SearchPage
+export default SearchPage;
