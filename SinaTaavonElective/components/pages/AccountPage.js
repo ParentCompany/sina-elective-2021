@@ -4,6 +4,7 @@
 /* eslint-disable no-tabs */
 import React, { Component } from 'react'
 import {
+<<<<<<< HEAD
   Button,
   Title,
   Paragraph,
@@ -20,6 +21,23 @@ import {
   ToastAndroid
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+=======
+	Button,
+	Title,
+	Paragraph,
+	Card,
+	ActivityIndicator,
+	Divider,
+} from 'react-native-paper';
+import {
+	View,
+	StyleSheet,
+	ScrollView,
+	Alert,
+	RefreshControl,
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 
 class AccountPage extends Component {
   constructor (props) {
@@ -116,6 +134,7 @@ class AccountPage extends Component {
 			token !== undefined ||
 			token !== '' ||
 			token !== []
+<<<<<<< HEAD
     ) {
       if (userData.length === 0 || userData === undefined) {
         this.getData(token)
@@ -126,6 +145,12 @@ class AccountPage extends Component {
       navigation.navigate('LoginPage')
     }
   };
+=======
+		) { 
+			if(userData.length === 0){
+				this.getData(token);
+			}
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 
   componentWillUnmount () {
     this.ejectComponent()
@@ -198,11 +223,20 @@ class AccountPage extends Component {
       })
   };
 
+<<<<<<< HEAD
   render () {
     const { userData, isLoading, userReviews } = this.state
     const { navigation } = this.props
 
     return (
+=======
+	render() {
+		const { userData, isLoading, userReviews, reFetch } = this.state;
+		const nav = this.props.navigation;
+		const { navigation } = this.props;
+
+		return (
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 			<View style={styles.container}>
 				<ScrollView
 					refreshControl={
@@ -239,9 +273,15 @@ class AccountPage extends Component {
 									compact='true'
 									mode='contained'
 									onPress={() =>
+<<<<<<< HEAD
 									  navigation.navigate('AccountDetailsUpdatePage', {
 									    reFetch: 'notUpdated'
 									  })
+=======
+										nav.navigate('AccountDetailsUpdatePage', {
+											reFetch: 'notUpdated',
+										})
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 									}>
 									Edit
 								</Button>
@@ -259,6 +299,7 @@ class AccountPage extends Component {
 									<Paragraph style={styles.cardParagraph}>
 										Review: {review.review.review_body}
 									</Paragraph>
+<<<<<<< HEAD
 									<View style={styles.containerRowButtons}>
 									<Button
 									style={styles.cardParagraph}
@@ -284,6 +325,8 @@ class AccountPage extends Component {
 									onPress={() => this.removeReview(review.location.location_id, review.review.review_id)}></Button>
 									</View>
 
+=======
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 								</Card>
 							))}
 							<Divider style={styles.dividerSpace} />
@@ -310,6 +353,7 @@ class AccountPage extends Component {
 }
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   textOr: {
     textAlign: 'center'
   },
@@ -347,5 +391,40 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between'
   }
 })
+=======
+	textOr: {
+		textAlign: 'center',
+	},
+	titlePage: {
+		marginTop: 10,
+		marginHorizontal: 10,
+	},
+	textInput: {
+		margin: 10,
+	},
+	loginButton: {
+		margin: 10,
+	},
+	container: {
+		flex: 1,
+		flexDirection: 'column',
+		justifyContent: 'center',
+	},
+	containerRow: {
+		flexDirection: 'row',
+	},
+	spaceCard: {
+		marginHorizontal: 10,
+		marginTop: 10,
+		paddingHorizontal: 10,
+	},
+	dividerSpace: {
+		marginTop: 10,
+	},
+	cardParagraph: {
+		marginVertical: 10,
+	},
+});
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 
 export default AccountPage

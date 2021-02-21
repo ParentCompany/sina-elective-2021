@@ -11,6 +11,7 @@ import {
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
+<<<<<<< HEAD
   Button,
   TextInput,
   Title,
@@ -53,6 +54,39 @@ class CreateReviewPage extends Component {
         return response.json()
       case 400:
         Alert.alert(
+=======
+	Button,
+	TextInput,
+    Caption,
+	Title,
+} from 'react-native-paper';
+
+class CreateReviewPage extends Component {
+	constructor(props) {
+		super(props);
+		this.state = {
+			shopData: {},
+			favourite: false,
+			userData: {},
+			refreshing: false,
+		};
+	}
+
+	setStateAsync(state) {
+		return new Promise((resolve) => {
+			this.setState(state, resolve);
+		});
+	}
+
+	statusCodeHandler = (response) => {
+		switch (response.status) {
+			case 200:
+				return response.json();
+			case 201:
+				return response.json();
+			case 400:
+				Alert.alert(
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 					`There has been an error in retreving your request. Status code: ${response.status}`
         )
         break
@@ -77,6 +111,7 @@ class CreateReviewPage extends Component {
       default:
         console.log(
 					`There has been an unknown error. Status code: ${response.status}.`
+<<<<<<< HEAD
         )
     }
   };
@@ -88,6 +123,39 @@ class CreateReviewPage extends Component {
     const { overall, quality, cleanliness, price, reviewBody } = this.state
 
     const token = await AsyncStorage.getItem('session_token')
+=======
+				);
+		}
+	};
+
+
+	addLike = async () => {
+		const { navigation } = this.props;
+		const { route } = this.props;
+		const { shopId, reviewId } = route.params;
+
+		const token = await AsyncStorage.getItem('session_token');
+
+		return fetch(`${global.BASE_URL}/location/${shopId}/review/${reviewId}/like`, {
+			method: 'post',
+			headers: {
+				'Content-Type': 'application/json',
+				'X-Authorization': token,
+			},
+		})
+			.then((response) => {
+				if (response.status === 200) {
+					navigation.goBack();
+				} else {
+					Alert.alert(`There has been an unknown error from the server.`);
+				}
+			})
+			.catch((error) => {
+				console.log(error + 'Account page error');
+				Alert.alert(`There has been an unknown error from the server.`);
+			});
+	};
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 
     const payload = { overall_rating: overall, price_rating: price, quality_rating: quality, clenliness_rating: cleanliness, review_body: reviewBody }
 
@@ -118,6 +186,7 @@ class CreateReviewPage extends Component {
     const { route } = this.props
     const { shopId, reviewId } = route.params
 
+<<<<<<< HEAD
     const token = await AsyncStorage.getItem('session_token')
 
     return fetch(`${global.BASE_URL}/location/${shopId}/review/${reviewId}/like`, {
@@ -139,6 +208,10 @@ class CreateReviewPage extends Component {
         Alert.alert('There has been an unknown error from the server.')
       })
   };
+=======
+	};
+	
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 
   _onRefresh () {
     this.setState({ refreshing: true })
@@ -147,8 +220,14 @@ class CreateReviewPage extends Component {
     })
   };
 
+<<<<<<< HEAD
   render () {
     const { overall, quality, cleanliness, price, reviewBody } = this.state
+=======
+	render() {
+		const { navigation } = this.props;
+		const { shopData, favourite } = this.state;
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 
     return (
 			<View style={styles.container}>
@@ -159,59 +238,16 @@ class CreateReviewPage extends Component {
 							onRefresh={this._onRefresh}
 						/>
 					}>
-
-					<Title style={styles.titlePage}>Write your review</Title>
-					<View style={styles.rowContainer}>
-						<Paragraph>Overall: </Paragraph>
-						<AirbnbRating
-							onFinishRating={(overall) => this.setState({ overall })}
-							showRating={false}
-							count={5}
-							defaultRating={overall}
-							size={20}
-						/>
-					</View>
-					<View style={styles.rowContainer}>
-						<Paragraph>Price: </Paragraph>
-						<AirbnbRating
-							onFinishRating={(price) => this.setState({ price })}
-							showRating={false}
-							count={5}
-							defaultRating={price}
-							size={20}
-						/>
-					</View>
-					<View style={styles.rowContainer}>
-						<Paragraph>Quality: </Paragraph>
-						<AirbnbRating
-							onFinishRating={(quality) => this.setState({ quality })}
-							showRating={false}
-							count={5}
-							defaultRating={quality}
-							size={20}
-						/>
-					</View>
-					<View style={styles.rowContainer}>
-						<Paragraph>Cleanliness: </Paragraph>
-						<AirbnbRating
-							onFinishRating={(cleanliness) => this.setState({ cleanliness })}
-							showRating={false}
-							count={5}
-							defaultRating={cleanliness}
-							size={20}
-						/>
-					</View>
-
-					<TextInput
-						style={styles.textInput}
-						placeholder='Write your review here'
-						autoCapitalize="none"
-						multiline
-						value={reviewBody}
-						onChangeText={value => this.onChangeText('reviewBody', value)}
-					/>
-					<Button style={styles.loginButton} mode="contained" onPress={this.addReview}>
-						Submit
+					
+                <Title style={styles.titlePage}>Write your review</Title>
+                <TextInput
+                    style={styles.textInput}
+                    placeholder='Email'
+                    autoCapitalize="none"
+                    onChangeText={value => this.onChangeText('email', value)}
+                />
+                <Button style={styles.loginButton} mode="contained" onPress={this.logIn}>
+                    Submit
   </Button>
 				</ScrollView>
 			</View>
@@ -220,6 +256,7 @@ class CreateReviewPage extends Component {
 }
 
 const styles = StyleSheet.create({
+<<<<<<< HEAD
   titlePage: {
     marginVertical: 20
   },
@@ -270,5 +307,56 @@ const styles = StyleSheet.create({
     marginVertical: 10
   }
 })
+=======
+	titlePage: {
+		marginVertical: 20,
+	},
+	rowContainer: {
+		flexDirection: 'row',
+	},
+	spaceCard: {
+		marginVertical: 15,
+		marginHorizontal: 10,
+	},
+	rowCard: {
+		flex: 1,
+		marginHorizontal: 10,
+		justifyContent: 'space-between',
+	},
+	container: {
+		flex: 1,
+		flexDirection: 'column',
+		justifyContent: 'center',
+		marginHorizontal: 10,
+		marginBottom: 15,
+	},
+	ratingSpace: {
+		marginVertical: 10,
+	},
+	titleRow: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+	},
+	reviewRow: {
+		flexDirection: 'row',
+		justifyContent: 'flex-start',
+		marginTop: 10,
+		alignItems: 'center',
+	},
+	avatarIcon: {
+		marginRight: 15,
+	},
+	reviewRowLikes: {
+		flexDirection: 'row',
+		justifyContent: 'space-between',
+		marginTop: 20,
+		alignItems: 'center',
+	},
+    textInput: {
+        marginVertical: 10
+    },
+});
+>>>>>>> parent of 644d3e1 (Delete and Edit Review)
 
 export default CreateReviewPage
