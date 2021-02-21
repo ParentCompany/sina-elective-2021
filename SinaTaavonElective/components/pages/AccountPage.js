@@ -1,4 +1,4 @@
-import React, {Component} from 'react'
+import React, { Component } from 'react'
 import {
 	Button,
 	Title,
@@ -23,14 +23,14 @@ class AccountPage extends Component {
 		this.state = {
 			userData: [],
 			isLoading: true,
-			userReviews: {reviews: []},
+			userReviews: { reviews: [] },
 			reFetch: 'notUpdated',
 			refreshing: false,
 		}
 	}
 
 	statusCodeHandler = (response) => {
-		const {navigation} = this.props
+		const { navigation } = this.props
 		switch (response.status) {
 			case 200:
 				return response.json()
@@ -72,7 +72,7 @@ class AccountPage extends Component {
 	}
 
 	logOut = async () => {
-		const {navigation} = this.props
+		const { navigation } = this.props
 		const token = await AsyncStorage.getItem('session_token')
 		return fetch(`${global.BASE_URL}/user/logout`, {
 			method: 'post',
@@ -96,8 +96,8 @@ class AccountPage extends Component {
 	}
 
 	componentDidMount = async () => {
-		const {navigation} = this.props
-		const {userData} = this.state
+		const { navigation } = this.props
+		const { userData } = this.state
 
 		this.ejectComponent = navigation.addListener('focus', () => {
 			this.componentDidMount()
@@ -143,9 +143,9 @@ class AccountPage extends Component {
 		})
 			.then((response) => this.statusCodeHandler(response))
 			.then(async (responseJson) => {
-				this.setState({userData: responseJson})
+				this.setState({ userData: responseJson })
 				this.reviewDetails(token, userId)
-				this.setState({isNotLoading: true})
+				this.setState({ isNotLoading: true })
 			})
 			.catch((error) => {
 				console.log(error + 'Account page error')
@@ -162,7 +162,7 @@ class AccountPage extends Component {
 		})
 			.then((response) => response.json())
 			.then(async (responseJson) => {
-				this.setState({userReviews: responseJson})
+				this.setState({ userReviews: responseJson })
 			})
 			.catch((error) => {
 				console.log(error + 'Account page error')
@@ -170,14 +170,14 @@ class AccountPage extends Component {
 	}
 
 	_onRefresh = () => {
-		this.setState({refreshing: true})
+		this.setState({ refreshing: true })
 		this.getData().then(() => {
-			this.setState({refreshing: false})
+			this.setState({ refreshing: false })
 		})
 	}
 
 	removeReview = async (shopId, reviewId) => {
-		const {navigation} = this.props
+		const { navigation } = this.props
 
 		const token = await AsyncStorage.getItem('session_token')
 
@@ -205,8 +205,8 @@ class AccountPage extends Component {
 	}
 
 	render() {
-		const {userData, isLoading, userReviews, reFetch} = this.state
-		const {navigation} = this.props
+		const { userData, isLoading, userReviews } = this.state
+		const { navigation } = this.props
 
 		return (
 			<View style={styles.container}>
@@ -311,8 +311,8 @@ class AccountPage extends Component {
 							))}
 						</View>
 					) : (
-						<ActivityIndicator animating={true} color={'#3366FF'} />
-					)}
+							<ActivityIndicator animating={true} color={'#3366FF'} />
+						)}
 				</ScrollView>
 			</View>
 		)

@@ -138,8 +138,6 @@ class ReviewPageLikes extends Component {
 	}
 
 	render() {
-		const { navigation } = this.props
-		const { shopData, favourite } = this.state
 		const { route } = this.props
 		const { reviewId, reviewBody, reviewLikes } = route.params
 

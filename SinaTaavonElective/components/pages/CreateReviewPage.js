@@ -10,9 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
 	Button,
 	TextInput,
-	Caption,
 	Title,
-	ToggleButton,
 	Paragraph,
 } from 'react-native-paper'
 
@@ -164,7 +162,6 @@ class CreateReviewPage extends Component {
 	}
 
 	render() {
-		const { navigation } = this.props
 		const {
 			overall,
 			quality,

@@ -4,12 +4,10 @@ import {
 	View,
 	StyleSheet,
 	ScrollView,
-	RefreshControl,
-	ToastAndroid,
+	RefreshControl
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Button, Card, Title, Paragraph } from 'react-native-paper'
-import { useFocusEffect } from '@react-navigation/native'
+import { Button, Card } from 'react-native-paper'
 
 class ReviewPage extends Component {
 	constructor(props) {
