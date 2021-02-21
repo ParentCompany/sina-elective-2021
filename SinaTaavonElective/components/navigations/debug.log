@@ -7,7 +7,6 @@
 [0216/103312.104:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
 [0216/105135.294:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
 [0216/161806.997:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
-<<<<<<< HEAD
 [0219/133118.688:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
 [0221/122829.693:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
 [0221/123926.793:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
@@ -21,8 +20,3 @@
 [0221/125924.106:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
 [0221/125935.850:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
 [0221/125941.861:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
-=======
->>>>>>> parent of 644d3e1 (Delete and Edit Review)
-[0221/135310.034:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
-[0221/135310.047:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
-[0221/135310.062:ERROR:registration_protocol_win.cc(102)] CreateFile: The system cannot find the file specified. (0x2)
