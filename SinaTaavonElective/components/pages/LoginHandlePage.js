@@ -1,44 +1,45 @@
-import React, { Component } from 'react';
-import { Button } from 'react-native-paper';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import SignupPage from './SignupPage';
-import LoginPage from './LoginPage';
-import AccountPage from './AccountPage';
+/* eslint-disable no-tabs */
+import React, { Component } from 'react'
+import { Button } from 'react-native-paper'
+import { View, StyleSheet, ScrollView } from 'react-native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import SignupPage from './SignupPage'
+import LoginPage from './LoginPage'
+import AccountPage from './AccountPage'
 
 class LoginHandlePage extends Component {
-    constructor(props) {
-        super(props);
-        this.state = { loginStatus: false, isLoggedin: false };
-    }
+  constructor (props) {
+    super(props)
+    this.state = { loginStatus: false, isLoggedin: false }
+  }
 
-    loginPageHandler = () => {
-        this.setState({ loginStatus: true });
-    };
+  loginPageHandler () {
+    this.setState({ loginStatus: true })
+  };
 
-    SignupPageHandler = () => {
-        this.setState({ loginStatus: false });
-    };
+  SignupPageHandler () {
+    this.setState({ loginStatus: false })
+  };
 
-    componentDidMount = async () => {
-        const token = await AsyncStorage.getItem('session_token');
-        if (token === null || token === undefined || token === '' || token === []) {
-            this.setState({ isLoggedin: false });
-        } else if (
-            token !== null ||
+  async componentDidMount () {
+    const token = await AsyncStorage.getItem('session_token')
+    if (token === null || token === undefined || token === '' || token === []) {
+      this.setState({ isLoggedin: false })
+    } else if (
+      token !== null ||
             token !== undefined ||
             token !== '' ||
             token !== []
-        ) {
-            this.setState({ isLoggedin: true });
-        }
-    };
+    ) {
+      this.setState({ isLoggedin: true })
+    }
+  };
 
-    render() {
-        const { loginStatus, isLoggedin } = this.state;
+  render () {
+    const { loginStatus, isLoggedin } = this.state
 
-        if (!isLoggedin) {
-            return (
+    if (!isLoggedin) {
+      return (
                 <ScrollView>
                     <View style={styles.container}>
                         {loginStatus ? <LoginPage /> : <SignupPage />}
@@ -67,31 +68,31 @@ class LoginHandlePage extends Component {
                         </View>
                     </View>
                 </ScrollView>
-            );
-        }
-        return (
+      )
+    }
+    return (
             <View style={styles.container}>
                 <AccountPage />
             </View>
-        );
-    }
+    )
+  }
 }
 
 const styles = StyleSheet.create({
-    buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'center',
-    },
-    loginButton: {
-        marginTop: 20,
-        marginHorizontal: 4,
-    },
-    container: {
-        flex: 1,
-        marginTop: 20,
-        alignContent: 'center',
-        justifyContent: 'center',
-    },
-});
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center'
+  },
+  loginButton: {
+    marginTop: 20,
+    marginHorizontal: 4
+  },
+  container: {
+    flex: 1,
+    marginTop: 20,
+    alignContent: 'center',
+    justifyContent: 'center'
+  }
+})
 
-export default LoginHandlePage;
+export default LoginHandlePage
