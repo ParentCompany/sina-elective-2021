@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, ScrollView, View, Alert } from 'react-native'
-import { TextInput, Title, RadioButton, Colors, Text, Button } from 'react-native-paper'
+import { TextInput, Title, RadioButton, Colors, Text, Button, Card } from 'react-native-paper'
 import { AirbnbRating } from 'react-native-ratings'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -14,7 +14,7 @@ class SearchPage extends Component {
             price: 0,
             cleanliness: 0,
             checked: '',
-            shopData: []
+            shop: []
         }
     }
 
@@ -25,45 +25,49 @@ class SearchPage extends Component {
     }
 
     statusCodeHandler = (response) => {
-		switch (response.status) {
-			case 200:
-				return response.json()
-			case 201:
-				return response.json()
-			case 400:
-				Alert.alert(
-					`There has been an error in retreving your request. Status code: ${response.status}`
-				)
-				break
-			case 401:
-				Alert.alert(
-					`Please go to account page to login ${response.status}`
-				)
-				break
-			case 403:
-				Alert.alert(
-					`Please relaunch the application. Status code: ${response.status}`
-				)
-				break
-			case 404:
-				Alert.alert(
-					`Request has not been found. Status code: ${response.status}`
-				)
-				break
-			case 500:
-				Alert.alert(
-					`Please relaunch the application or make sure you are connected to the internet. Status code: ${response.status}`
-				)
-				break
-			default:
-				console.log(
-					`There has been an unknown error. Status code: ${response.status}.`
-				)
-		}
-	}
+        switch (response.status) {
+            case 200:
+                return response.json()
+            case 201:
+                return response.json()
+            case 400:
+                Alert.alert(
+                    `There has been an error in retreving your request. Status code: ${response.status}`
+                )
+                break
+            case 401:
+                Alert.alert(
+                    `Please go to account page to login ${response.status}`
+                )
+                break
+            case 403:
+                Alert.alert(
+                    `Please relaunch the application. Status code: ${response.status}`
+                )
+                break
+            case 404:
+                Alert.alert(
+                    `Request has not been found. Status code: ${response.status}`
+                )
+                break
+            case 500:
+                Alert.alert(
+                    `Please relaunch the application or make sure you are connected to the internet. Status code: ${response.status}`
+                )
+                break
+            default:
+                console.log(
+                    `There has been an unknown error. Status code: ${response.status}.`
+                )
+        }
+    }
 
+    clearData = () => {
+        this.setState({ searchQuery: '', overall: 0, quality: 0, price: 0, cleanliness: 0, checked: '' });
+    }
 
     getData = async () => {
+        this.setState({shop: []});
         const {
             searchQuery,
             overall,
@@ -89,8 +93,8 @@ class SearchPage extends Component {
         })
             .then((response) => this.statusCodeHandler(response))
             .then(async (responseJson) => {
-                await this.setStateAsync({ shopData: responseJson })
-                console.log(responseJson)
+                await this.setStateAsync({ shop: responseJson })
+                
             })
             .catch((error) => {
                 console.log(error + 'Account page error')
@@ -101,23 +105,23 @@ class SearchPage extends Component {
     queryMaker = (data) => {
         const query = [];
         for (let d in data)
-        query.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
+            query.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]));
         return query.join('&');
     }
 
     cleanObject = (object) => {
-		for (var propName in object) {
-			if (
-				object[propName] === null ||
-				object[propName] === undefined ||
-				object[propName] === '' ||
+        for (var propName in object) {
+            if (
+                object[propName] === null ||
+                object[propName] === undefined ||
+                object[propName] === '' ||
                 object[propName] === 0
-			) {
-				delete object[propName]
-			}
-		}
-		return this.queryMaker(object)
-	}
+            ) {
+                delete object[propName]
+            }
+        }
+        return this.queryMaker(object)
+    }
 
     onChangeSearch = (searchQuery) => {
         this.setState({ searchQuery: searchQuery })
@@ -131,8 +135,30 @@ class SearchPage extends Component {
             cleanliness,
             price,
             reviewBody,
-            checked
+            checked,
+            shop
         } = this.state
+
+        const coverPhoto = [
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-1.jpg',
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-2.jpg',
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-3.jpg',
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-4.jpg',
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-5.jpg',
+            },
+        ]
+
+        console.log(shop)
+
         return (
             <View style={styles.container}>
                 <ScrollView>
@@ -201,11 +227,42 @@ class SearchPage extends Component {
                             onPress={() => this.setState({ checked: 'favourite' })}
                         />
                     </View>
+                    <View style={styles.reviewRowButton}>
                     <Button
                         style={styles.submitButton}
                         compact={true}
                         mode='contained'
+                        onPress={() => this.clearData()}>Clear</Button>
+                         <Button
+                        style={styles.submitButton}
+                        compact={true}
+                        mode='contained'
                         onPress={() => this.getData()}>Find</Button>
+                        </View>
+                        {shop?.map((shop, index) => (
+                   
+                        <Card key={index} style={styles.spaceCard}>
+                        <Card.Title
+                            title={shop.location_name}
+                            subtitle={shop.location_town}
+                        />
+                        <Card.Cover source={{ uri: coverPhoto[2].path }} />
+                        <Card.Actions>
+                            <Button
+                                mode='text'
+                                compact={true}
+                                onPress={() =>
+                                    navigation.navigate('ShopPage', {
+                                        shopId: shop.location_id,
+                                        coverPhoto: coverPhoto[index].path,
+                                    })
+                                }>
+                                Go to the Coffee Shop
+								</Button>
+                        </Card.Actions>
+                    </Card> 
+                    ))} 
+
                 </ScrollView>
                 <View style={styles.reviewRow}>
                     <Button
@@ -238,6 +295,16 @@ const styles = StyleSheet.create({
         marginVertical: 10
     },
     reviewRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 20,
+        alignItems: 'center',
+    },
+    spaceCard: {
+        marginVertical: 15,
+        marginHorizontal: 10,
+    },
+    reviewRowButton: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginTop: 20,
