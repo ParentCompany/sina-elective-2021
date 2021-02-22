@@ -14,6 +14,7 @@ import {
 	Alert,
 	RefreshControl,
 	ToastAndroid,
+	Dimensions,
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -22,7 +23,7 @@ class AccountPage extends Component {
 		super(props)
 		this.state = {
 			userData: [],
-			isLoading: true,
+			isNotLoading: false,
 			userReviews: { reviews: [] },
 			reFetch: 'notUpdated',
 			refreshing: false,
@@ -119,6 +120,7 @@ class AccountPage extends Component {
 			token !== []
 		) {
 			if (userData.length === 0 || userData === undefined) {
+				this.setState({ isNotLoading: false })
 				this.getData(token)
 			}
 		} else {
@@ -205,7 +207,7 @@ class AccountPage extends Component {
 	}
 
 	render() {
-		const { userData, isLoading, userReviews } = this.state
+		const { userData, isNotLoading, userReviews } = this.state
 		const { navigation } = this.props
 
 		return (
@@ -217,7 +219,7 @@ class AccountPage extends Component {
 							onRefresh={this._onRefresh}
 						/>
 					}>
-					{isLoading ? (
+					{isNotLoading ? (
 						<View>
 							<Title style={styles.titlePage}>Your account details</Title>
 							<Card style={styles.spaceCard}>
@@ -311,7 +313,9 @@ class AccountPage extends Component {
 							))}
 						</View>
 					) : (
-							<ActivityIndicator animating={true} color={'#3366FF'} />
+							<View style={styles.activityIndicator}>
+								<ActivityIndicator animating={true} color={'#3366FF'} />
+							</View>
 						)}
 				</ScrollView>
 			</View>
@@ -320,15 +324,9 @@ class AccountPage extends Component {
 }
 
 const styles = StyleSheet.create({
-	textOr: {
-		textAlign: 'center',
-	},
 	titlePage: {
 		marginTop: 10,
 		marginHorizontal: 10,
-	},
-	textInput: {
-		margin: 10,
 	},
 	loginButton: {
 		margin: 10,
@@ -356,6 +354,9 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 	},
+	activityIndicator: {
+	marginTop: Dimensions.get('screen').height / 3
+	}
 })
 
 export default AccountPage

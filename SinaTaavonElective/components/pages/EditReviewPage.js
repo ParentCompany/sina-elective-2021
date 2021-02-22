@@ -4,8 +4,9 @@ import {
 	View,
 	StyleSheet,
 	ScrollView,
-	RefreshControl,
 	ToastAndroid,
+	Dimensions,
+	Image
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -18,6 +19,8 @@ import {
 } from 'react-native-paper'
 
 import { AirbnbRating } from 'react-native-ratings'
+
+import * as ImagePicker from 'react-native-image-picker';
 
 class EditReviewPage extends Component {
 	constructor(props) {
@@ -32,6 +35,8 @@ class EditReviewPage extends Component {
 			reviewPrice: 0,
 			reviewCleanliness: 0,
 			reviewBody: '',
+			image: null,
+			oldImage: null
 		}
 	}
 
@@ -61,6 +66,7 @@ class EditReviewPage extends Component {
 			reviewPrice: reviewPrice,
 			reviewBody: reviewBody,
 		})
+		this.getImageFromServer()
 	}
 
 	statusCodeHandler = (response) => {
@@ -85,9 +91,7 @@ class EditReviewPage extends Component {
 				)
 				break
 			case 404:
-				Alert.alert(
-					`Request has not been found. Status code: ${response.status}`
-				)
+				ToastAndroid.show('No review photo available', ToastAndroid.SHORT)
 				break
 			case 500:
 				Alert.alert(
@@ -99,6 +103,32 @@ class EditReviewPage extends Component {
 					`There has been an unknown error. Status code: ${response.status}.`
 				)
 		}
+	}
+
+	getImageFromServer = async () => {
+		const { navigation } = this.props
+		const { route } = this.props
+		const { reviewId, shopId } = route.params
+
+		const token = await AsyncStorage.getItem('session_token')
+
+		return fetch(
+			`${global.BASE_URL}/location/${shopId}/review/${reviewId}/photo`,
+			{
+				headers: {
+					'Content-Type': 'image/png',
+					'X-Authorization': token,
+				},
+			}
+		)
+			.then((response) => this.statusCodeHandler(response))
+			.then(async (responseJson) => {
+				this.setState({ oldImage: responseJson })
+			})
+			.catch((error) => {
+				console.log(error + 'Account page error')
+				Alert.alert(`There has been an unknown error from the server.`)
+			})
 	}
 
 	editReview = async () => {
@@ -148,6 +178,91 @@ class EditReviewPage extends Component {
 			})
 	}
 
+	addImageToServer = async () => {
+		const { navigation } = this.props
+		const { route } = this.props
+		const { reviewId, shopId } = route.params
+		const { image } = this.state
+
+		const token = await AsyncStorage.getItem('session_token')
+
+		let payload = image.base64 
+
+		return fetch(
+			`${global.BASE_URL}/location/${shopId}/review/${reviewId}/photo`,
+			{
+				method: 'post',
+				headers: {
+					'Content-Type': 'image/png',
+					'X-Authorization': token,
+				},
+				body: JSON.stringify(payload),
+			}
+		)
+			.then((response) => {
+				if (response.status === 200) {
+					ToastAndroid.show('Photo has been uploaded', ToastAndroid.SHORT)
+				} else {
+					Alert.alert(`There has been an unknown error from the server.`)
+				}
+			})
+			.catch((error) => {
+				console.log(error + 'Account page error')
+				Alert.alert(`There has been an unknown error from the server.`)
+			})
+	}
+
+	deleteImageFromServer = async () => {
+		const { route } = this.props
+		const { reviewId, shopId } = route.params
+		const { oldImage } = this.state
+
+		const token = await AsyncStorage.getItem('session_token')
+
+		return fetch(
+			`${global.BASE_URL}/location/${shopId}/review/${reviewId}/photo`,
+			{
+				method: 'delete',
+				headers: {
+					'Content-Type': 'image/png',
+					'X-Authorization': token,
+				}
+			}
+		)
+			.then((response) => {
+				if (response.status === 200) {
+					ToastAndroid.show('Photo has been deleted', ToastAndroid.SHORT)
+					this.setState({ oldImage: null })
+				} else {
+					Alert.alert(`There has been an unknown error from the server.`)
+				}
+			})
+			.catch((error) => {
+				console.log(error + 'Account page error')
+				Alert.alert(`There has been an unknown error from the server.`)
+			})
+	}
+
+	profanityFilter = () => {
+		const catalogue = ['cake', 'muffin', 'biscuit', 'cakes', 'muffins', 'biscuits', 'croissant', 'croissants', 'bread']
+		let hasProfanity = catalogue.some(snippit => this.state.reviewBody.toLowerCase().includes(snippit))
+
+		if (hasProfanity) {
+			Alert.alert(`You can only talk about the coffee.`)
+		} else {
+			this.editReview()
+		}
+	}
+
+	getImage = () => {
+		const options = { noData: true, includeBase64: true }
+		ImagePicker.launchImageLibrary(options, response => {
+			if (response) {
+				this.setState({ image: response })
+			}
+		})
+	}
+
 	render() {
 		const { route } = this.props
 		const {
@@ -156,12 +271,36 @@ class EditReviewPage extends Component {
 			reviewCleanliness,
 			reviewPrice,
 			reviewBody,
+			image,
+			oldImage
 		} = this.state
 
 		return (
 			<View style={styles.container}>
 				<ScrollView>
 					<Title style={styles.titlePage}>Write your review</Title>
+					<View>
+						{image && (
+							<View>
+							<Image
+								source={{ uri: image.uri }}
+								style={styles.imageStyle}
+							/>
+							<Button
+						style={styles.loginButton}
+						mode='contained'
+						onPress={() => this.addImageToServer()}>
+						Submit your photo
+					</Button>
+					</View>
+						)}
+						<Button
+						style={styles.loginButton}
+						mode='contained'
+						onPress={() => this.getImage()}>
+						choose a photo
+					</Button>
+					</View>
 					<View style={styles.rowContainer}>
 						<Paragraph>Overall: </Paragraph>
 						<AirbnbRating
@@ -219,9 +358,25 @@ class EditReviewPage extends Component {
 					<Button
 						style={styles.loginButton}
 						mode='contained'
-						onPress={() => this.editReview()}>
+						onPress={() => this.profanityFilter()}>
 						Submit
 					</Button>
+
+					{oldImage && (
+								<View>
+									<Title style={styles.titlePage}>Uploaded images</Title>
+									<Image
+										source={{ uri: `data:image/png;base64,${oldImage}` }}
+										style={styles.imageStyle}
+									/>
+									<Button
+						style={styles.loginButton}
+						mode='contained'
+						onPress={() => this.deleteImageFromServer()}>
+						Delete image
+					</Button>
+								</View>
+							)}
 				</ScrollView>
 			</View>
 		)
@@ -278,6 +433,15 @@ const styles = StyleSheet.create({
 	textInput: {
 		marginVertical: 10,
 	},
+	imageStyle: {
+		borderRadius: 7,
+		width: Dimensions.get('screen').width - 20,
+		height: 250,
+		marginVertical: 10
+	},
+	loginButton: {
+		marginBottom: 10
+	}
 })
 
 export default EditReviewPage

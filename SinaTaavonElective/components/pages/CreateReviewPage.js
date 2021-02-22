@@ -4,17 +4,20 @@ import {
 	View,
 	StyleSheet,
 	ScrollView,
-	RefreshControl,
+	Image,
+	Dimensions
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
 	Button,
 	TextInput,
 	Title,
-	Paragraph,
+	Paragraph
 } from 'react-native-paper'
 
 import { AirbnbRating } from 'react-native-ratings'
+
+import * as ImagePicker from 'react-native-image-picker';
 
 class CreateReviewPage extends Component {
 	constructor(props) {
@@ -29,7 +32,17 @@ class CreateReviewPage extends Component {
 			price: 0,
 			cleanliness: 0,
 			reviewBody: '',
+			image: null
 		}
+	}
+
+	getImage = () => {
+		const options = { noData: true, }
+		ImagePicker.launchImageLibrary(options, response => {
+			if (response.uri) {
+				this.setState({ image: response })
+			}
+		})
 	}
 
 	setStateAsync(state) {
@@ -101,6 +114,7 @@ class CreateReviewPage extends Component {
 			cleanliness,
 			price,
 			reviewBody,
+			image
 		} = this.state
 
 		const token = await AsyncStorage.getItem('session_token')
@@ -172,6 +186,7 @@ class CreateReviewPage extends Component {
 			cleanliness,
 			price,
 			reviewBody,
+			image
 		} = this.state
 
 		return (
@@ -218,7 +233,6 @@ class CreateReviewPage extends Component {
 							size={20}
 						/>
 					</View>
-
 					<TextInput
 						style={styles.textInput}
 						placeholder='Write your review here'
@@ -227,6 +241,8 @@ class CreateReviewPage extends Component {
 						value={reviewBody}
 						onChangeText={(value) => this.onChangeText('reviewBody', value)}
 					/>
+					
+					
 					<Button
 						style={styles.loginButton}
 						mode='contained'
@@ -241,7 +257,8 @@ class CreateReviewPage extends Component {
 
 const styles = StyleSheet.create({
 	titlePage: {
-		marginVertical: 20,
+		marginTop: 20,
+		marginBottom: 10
 	},
 	rowContainer: {
 		flexDirection: 'row',
@@ -289,6 +306,15 @@ const styles = StyleSheet.create({
 	textInput: {
 		marginVertical: 10,
 	},
+	imageStyle: {
+		borderRadius: 7,
+		width: Dimensions.get('screen').width - 20,
+		height: 250,
+		marginVertical: 10
+	},
+	loginButton: {
+		marginBottom: 10
+	}
 })
 
 export default CreateReviewPage

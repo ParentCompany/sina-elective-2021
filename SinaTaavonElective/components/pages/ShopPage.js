@@ -124,6 +124,24 @@ class ShopPage extends Component {
             })
     }
 
+    getImageFromServer = async (token, shopId) => {
+        return fetch(`${global.BASE_URL}/location/${shopId}/review`, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Authorization': token,
+            },
+        })
+            .then((response) => this.statusCodeHandler(response))
+            .then(async (responseJson) => {
+                await this.setStateAsync({ shopData: responseJson })
+                this.setState({ isNotLoading: true })
+            })
+            .catch((error) => {
+                console.log(error + 'Account page error')
+                Alert.alert(`There has been an unknown error from the server.`)
+            })
+    }
+
     getUserInfo = async (token, userId) => {
         console.log(token)
 

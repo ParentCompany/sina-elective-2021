@@ -292,7 +292,7 @@ class SearchPage extends Component {
 
                 </ScrollView>
                 <View style={styles.reviewRow}>
-                    {shop.length >= 2 ? 
+                    {offset >= 1 ? 
                     <Button
                         icon='arrow-left-bold'
                         compact={true}

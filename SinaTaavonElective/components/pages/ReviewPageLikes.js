@@ -5,6 +5,9 @@ import {
 	StyleSheet,
 	ScrollView,
 	RefreshControl,
+	Image,
+	Dimensions,
+	ToastAndroid
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -23,6 +26,7 @@ class ReviewPageLikes extends Component {
 			favourite: false,
 			userData: {},
 			refreshing: false,
+			image: null
 		}
 	}
 
@@ -54,9 +58,7 @@ class ReviewPageLikes extends Component {
 				)
 				break
 			case 404:
-				Alert.alert(
-					`Request has not been found. Status code: ${response.status}`
-				)
+				ToastAndroid.show('Review has no photo', ToastAndroid.SHORT)
 				break
 			case 500:
 				Alert.alert(
@@ -89,10 +91,42 @@ class ReviewPageLikes extends Component {
 		)
 			.then((response) => {
 				if (response.status === 200) {
+					ToastAndroid.show('Review has been liked', ToastAndroid.SHORT)
 					navigation.goBack()
 				} else {
 					Alert.alert(`There has been an unknown error from the server.`)
 				}
+			})
+			.catch((error) => {
+				console.log(error + 'Account page error')
+				Alert.alert(`There has been an unknown error from the server.`)
+			})
+	}
+
+	componentDidMount = async () => {
+		this.getImageFromServer()
+	}
+
+	getImageFromServer = async () => {
+		const { navigation } = this.props
+		const { route } = this.props
+		const { reviewId, shopId } = route.params
+		const { image } = this.state
+
+		const token = await AsyncStorage.getItem('session_token')
+
+		return fetch(
+			`${global.BASE_URL}/location/${shopId}/review/${reviewId}/photo`,
+			{
+				headers: {
+					'Content-Type': 'image/png',
+					'X-Authorization': token,
+				},
+			}
+		)
+			.then((response) => this.statusCodeHandler(response))
+			.then(async (responseJson) => {
+				this.setState({ image: responseJson })
 			})
 			.catch((error) => {
 				console.log(error + 'Account page error')
@@ -119,6 +153,7 @@ class ReviewPageLikes extends Component {
 		)
 			.then((response) => {
 				if (response.status === 200) {
+					ToastAndroid.show('Review has been unliked', ToastAndroid.SHORT)
 					navigation.goBack()
 				} else {
 					Alert.alert(`There has been an unknown error from the server.`)
@@ -140,6 +175,7 @@ class ReviewPageLikes extends Component {
 	render() {
 		const { route } = this.props
 		const { reviewId, reviewBody, reviewLikes } = route.params
+		const { image } = this.state;
 
 		return (
 			<View style={styles.container}>
@@ -152,6 +188,15 @@ class ReviewPageLikes extends Component {
 					}>
 					<Card style={styles.ratingSpace}>
 						<Card.Content>
+							{image && (
+								<View>
+									<Title style={styles.ratingSpace}>Images</Title>
+									<Image
+										source={{ uri: `data:image/png;base64,${image}` }}
+										style={styles.imageStyle}
+									/>
+								</View>
+							)}
 							<Title style={styles.ratingSpace}>Review ID: {reviewId}</Title>
 							<View style={styles.reviewRow}>
 								<Avatar.Icon
@@ -236,6 +281,12 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 		marginTop: 20,
 		alignItems: 'center',
+	},
+	imageStyle: {
+		borderRadius: 7,
+		width: Dimensions.get('screen').width - 50,
+		height: 250,
+		marginVertical: 10
 	},
 })
 
