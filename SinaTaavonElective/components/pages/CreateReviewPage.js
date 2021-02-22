@@ -80,6 +80,17 @@ class CreateReviewPage extends Component {
 		}
 	}
 
+	profanityFilter = () => {
+		const catalogue = ['cake', 'muffin', 'biscuit', 'cakes', 'muffins', 'biscuits', 'croissant', 'croissants', 'bread']
+		let hasProfanity = catalogue.some(snippit => this.state.reviewBody.toLowerCase().includes(snippit))
+
+		if (hasProfanity) {
+			Alert.alert(`You can only talk about the coffee.`)
+		} else {
+			this.addReview()
+		}
+	}
+
 	addReview = async () => {
 		const { navigation } = this.props
 		const { route } = this.props
@@ -154,13 +165,6 @@ class CreateReviewPage extends Component {
 			})
 	}
 
-	_onRefresh = () => {
-		this.setState({ refreshing: true })
-		this.componentDidMount().then(() => {
-			this.setState({ refreshing: false })
-		})
-	}
-
 	render() {
 		const {
 			overall,
@@ -172,13 +176,7 @@ class CreateReviewPage extends Component {
 
 		return (
 			<View style={styles.container}>
-				<ScrollView
-					refreshControl={
-						<RefreshControl
-							refreshing={this.state.refreshing}
-							onRefresh={this._onRefresh}
-						/>
-					}>
+				<ScrollView>
 					<Title style={styles.titlePage}>Write your review</Title>
 					<View style={styles.rowContainer}>
 						<Paragraph>Overall: </Paragraph>
@@ -232,7 +230,7 @@ class CreateReviewPage extends Component {
 					<Button
 						style={styles.loginButton}
 						mode='contained'
-						onPress={this.addReview}>
+						onPress={() => this.profanityFilter()}>
 						Submit
 					</Button>
 				</ScrollView>

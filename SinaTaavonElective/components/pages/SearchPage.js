@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { StyleSheet, ScrollView, View, Alert } from 'react-native'
-import { TextInput, Title, RadioButton, Colors, Text, Button, Card } from 'react-native-paper'
+import { TextInput, Title, RadioButton, Colors, Text, Button, Card, Divider } from 'react-native-paper'
 import { AirbnbRating } from 'react-native-ratings'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
@@ -13,6 +13,7 @@ class SearchPage extends Component {
             quality: 0,
             price: 0,
             cleanliness: 0,
+            offset: 0,
             checked: '',
             shop: []
         }
@@ -63,7 +64,7 @@ class SearchPage extends Component {
     }
 
     clearData = () => {
-        this.setState({ searchQuery: '', overall: 0, quality: 0, price: 0, cleanliness: 0, checked: '' });
+        this.setState({ searchQuery: '', overall: 0, quality: 0, price: 0, cleanliness: 0, checked: '', offset: 0 });
     }
 
     getData = async () => {
@@ -74,13 +75,16 @@ class SearchPage extends Component {
             quality,
             cleanliness,
             price,
-            reviewBody,
-            checked
+            checked,
+            offset
         } = this.state
+
 
         const token = await AsyncStorage.getItem('session_token')
 
-        const data = { 'q': searchQuery, 'overall_rating': overall, 'price_rating': price, 'quality_rating': quality, 'clenliness_rating': cleanliness, 'search_in': checked };
+        console.log(offset)
+
+        const data = { 'q': searchQuery, 'overall_rating': overall, 'price_rating': price, 'quality_rating': quality, 'clenliness_rating': cleanliness, 'search_in': checked, 'limit': 1, 'offset': offset  };
         const querystring = this.cleanObject(data);
 
         console.log(querystring)
@@ -127,16 +131,25 @@ class SearchPage extends Component {
         this.setState({ searchQuery: searchQuery })
     }
 
+    addOffset = () => {
+        this.setState({ offset: this.state.offset + 1 }, () => { this.getData() })
+    }
+
+    removeOffset = () => {
+        this.setState({ offset: this.state.offset - 1 }, () => {  this.getData() }) 
+    }
+
     render() {
+        const { navigation } = this.props
         const {
             searchQuery,
             overall,
             quality,
             cleanliness,
             price,
-            reviewBody,
             checked,
-            shop
+            shop,
+            offset
         } = this.state
 
         const coverPhoto = [
@@ -155,9 +168,22 @@ class SearchPage extends Component {
             {
                 path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-5.jpg',
             },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-1.jpg',
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-2.jpg',
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-3.jpg',
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-4.jpg',
+            },
+            {
+                path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-5.jpg',
+            },
         ]
-
-        console.log(shop)
 
         return (
             <View style={styles.container}>
@@ -239,6 +265,7 @@ class SearchPage extends Component {
                         mode='contained'
                         onPress={() => this.getData()}>Find</Button>
                         </View>
+                        <Divider></Divider>
                         {shop?.map((shop, index) => (
                    
                         <Card key={index} style={styles.spaceCard}>
@@ -246,7 +273,7 @@ class SearchPage extends Component {
                             title={shop.location_name}
                             subtitle={shop.location_town}
                         />
-                        <Card.Cover source={{ uri: coverPhoto[2].path }} />
+                        <Card.Cover source={{ uri: coverPhoto[index + offset].path }} />
                         <Card.Actions>
                             <Button
                                 mode='text'
@@ -254,7 +281,7 @@ class SearchPage extends Component {
                                 onPress={() =>
                                     navigation.navigate('ShopPage', {
                                         shopId: shop.location_id,
-                                        coverPhoto: coverPhoto[index].path,
+                                        coverPhoto: coverPhoto[index + offset].path,
                                     })
                                 }>
                                 Go to the Coffee Shop
@@ -265,16 +292,20 @@ class SearchPage extends Component {
 
                 </ScrollView>
                 <View style={styles.reviewRow}>
+                    {shop.length >= 2 ? 
                     <Button
                         icon='arrow-left-bold'
                         compact={true}
                         mode='contained'
-                        onPress={() => this.addLike()}></Button>
+                        onPress={() => this.removeOffset()}></Button>
+                    : <View></View> }
+                    {shop.length !== 0 ?
                     <Button
                         icon='arrow-right-bold'
                         compact={true}
                         mode='contained'
-                        onPress={() => this.removeLike()}></Button>
+                        onPress={() => this.addOffset()}></Button>
+                    : <View></View> }
                 </View>
             </View>
         )
