@@ -17,6 +17,7 @@ import {
 	Dimensions,
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Rating, AirbnbRating } from 'react-native-ratings'
 
 class AccountPage extends Component {
 	constructor(props) {
@@ -85,9 +86,11 @@ class AccountPage extends Component {
 			.then((response) => {
 				if (response.status === 200) {
 					console.log('user gone')
+					this.setState({userData: [], userReviews: { reviews: [] }})
 					AsyncStorage.clear()
 					navigation.navigate('LoginPage')
 				} else {
+					this.setState({userData: [], userReviews: { reviews: [] }})
 					AsyncStorage.clear()
 				}
 			})
@@ -151,7 +154,9 @@ class AccountPage extends Component {
 			})
 			.catch((error) => {
 				console.log(error + 'Account page error')
-				Alert.alert(`There has been an unknown error from the server.`)
+				Alert.alert(
+					`There has been an unknown error from the server.`
+				)
 			})
 	}
 
@@ -195,7 +200,10 @@ class AccountPage extends Component {
 		)
 			.then((response) => {
 				if (response.status === 200) {
-					ToastAndroid.show('Review has been deleted', ToastAndroid.SHORT)
+					ToastAndroid.show(
+						'Review has been deleted',
+						ToastAndroid.SHORT
+					)
 					this.getData()
 				} else if (response.status === 403) {
 					Alert.alert(`Forbidden request.`)
@@ -210,6 +218,24 @@ class AccountPage extends Component {
 		const { userData, isNotLoading, userReviews } = this.state
 		const { navigation } = this.props
 
+		const coverPhoto = [
+			{
+				path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-1.jpg',
+			},
+			{
+				path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-2.jpg',
+			},
+			{
+				path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-3.jpg',
+			},
+			{
+				path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-4.jpg',
+			},
+			{
+				path: 'https://cdn.ciptex.com/sina_appdev/coffee-shop-5.jpg',
+			},
+		]
+
 		return (
 			<View style={styles.container}>
 				<ScrollView
@@ -221,7 +247,9 @@ class AccountPage extends Component {
 					}>
 					{isNotLoading ? (
 						<View>
-							<Title style={styles.titlePage}>Your account details</Title>
+							<Title style={styles.titlePage}>
+								Your account details
+							</Title>
 							<Card style={styles.spaceCard}>
 								<Paragraph style={styles.cardParagraph}>
 									First name: {userData?.first_name}
@@ -238,7 +266,7 @@ class AccountPage extends Component {
 									style={styles.loginButton}
 									compact='true'
 									mode='contained'
-									onPress={this.logOut}>
+									onPress={() => this.logOut()}>
 									Logout
 								</Button>
 								<Button
@@ -260,9 +288,18 @@ class AccountPage extends Component {
 									<Paragraph style={styles.cardParagraph}>
 										Coffee Shop: {review.location.location_name}
 									</Paragraph>
-									<Paragraph style={styles.cardParagraph}>
-										Overall rating: {review.review.overall_rating}
-									</Paragraph>
+									<View style={styles.rowContainerRating}>
+										<Paragraph style={styles.cardParagraph}>
+											Overall rating:{' '}
+										</Paragraph>
+										<AirbnbRating
+											showRating={false}
+											count={5}
+											defaultRating={review.review.overall_rating}
+											size={20}
+											isDisabled
+										/>
+									</View>
 									<Paragraph style={styles.cardParagraph}>
 										Review: {review.review.review_body}
 									</Paragraph>
@@ -279,7 +316,8 @@ class AccountPage extends Component {
 													reviewBody: review.review.review_body,
 													reviewOverall: review.review.overall_rating,
 													reviewPrice: review.review.price_rating,
-													reviewCleanliness: review.review.clenliness_rating,
+													reviewCleanliness:
+														review.review.clenliness_rating,
 													reviewQuality: review.review.quality_rating,
 												})
 											}></Button>
@@ -301,22 +339,51 @@ class AccountPage extends Component {
 							<Title style={styles.titlePage}>
 								Your favourite locations
 							</Title>
-							{userReviews?.favourite_locations?.map((favourite, index) => (
-								<Card key={index} style={styles.spaceCard}>
-									<Paragraph style={styles.cardParagraph}>
-										Coffee Shop Name: {favourite.location_name}
-									</Paragraph>
-									<Paragraph style={styles.cardParagraph}>
-										Coffee Shop Town: {favourite.location_town}
-									</Paragraph>
-								</Card>
-							))}
+							{userReviews?.favourite_locations?.map(
+								(favourite, index) => (
+									<Card key={index} style={styles.spaceCard}>
+										<Paragraph style={styles.cardParagraph}>
+											Coffee Shop Name: {favourite.location_name}
+										</Paragraph>
+										<Paragraph style={styles.cardParagraph}>
+											Coffee Shop Town: {favourite.location_town}
+										</Paragraph>
+										<View style={styles.rowContainerRating}>
+											<Paragraph style={styles.cardParagraph}>
+												Overall rating:{' '}
+											</Paragraph>
+											<Rating
+												showRating={false}
+												count={5}
+												startingValue={favourite.avg_overall_rating}
+												readonly={true}
+												fractions={2}
+												type='star'
+												imageSize={20}
+											/>
+										</View>
+										<Card.Actions>
+											<Button
+												style={{ marginLeft: -10 }}
+												mode='contained'
+												onPress={() =>
+													navigation.navigate('ShopPage', {
+														shopId: favourite.location_id,
+														coverPhoto: coverPhoto[index].path,
+													})
+												}>
+												Open
+											</Button>
+										</Card.Actions>
+									</Card>
+								)
+							)}
 						</View>
 					) : (
-							<View style={styles.activityIndicator}>
-								<ActivityIndicator animating={true} color={'#3366FF'} />
-							</View>
-						)}
+						<View style={styles.activityIndicator}>
+							<ActivityIndicator animating={true} color={'#3366FF'} />
+						</View>
+					)}
 				</ScrollView>
 			</View>
 		)
@@ -355,8 +422,13 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-between',
 	},
 	activityIndicator: {
-	marginTop: Dimensions.get('screen').height / 3
-	}
+		marginTop: Dimensions.get('screen').height / 3,
+	},
+	rowContainerRating: {
+		flexDirection: 'row',
+		justifyContent: 'flex-start',
+		alignItems: 'center',
+	},
 })
 
 export default AccountPage
