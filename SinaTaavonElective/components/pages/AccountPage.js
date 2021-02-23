@@ -119,7 +119,7 @@ class AccountPage extends Component {
 			token !== '' ||
 			token !== []
 		) {
-			if (userData.length === 0 || userData === undefined) {
+			if (userData?.length === 0 || userData === undefined) {
 				this.setState({ isNotLoading: false })
 				this.getData(token)
 			}

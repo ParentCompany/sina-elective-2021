@@ -1,12 +1,31 @@
 import React, { Component } from 'react'
 import { Button, TextInput, Title, Caption } from 'react-native-paper'
-import { Alert, View, StyleSheet } from 'react-native'
+import { Alert, View, StyleSheet, ToastAndroid } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 class SignupPage extends Component {
     constructor(props) {
         super(props)
         this.state = { email: '', password: '', firstname: '', lastname: '' }
+    }
+
+    statusCodeHandler = (response) => {
+        switch (response.status) {
+            case 200:
+                return response.json()
+            case 400:
+                ToastAndroid.show('Username or Password is incorrect', ToastAndroid.SHORT)
+                break
+            case 500:
+                Alert.alert(
+                    `Please relaunch the application or make sure you are connected to the internet. Status code: ${response.status}`
+                )
+                break
+            default:
+                console.log(
+                    `There has been an unknown error. Status code: ${response.status}.`
+                )
+        }
     }
 
     onChangeText = (key, value) => {
@@ -32,10 +51,12 @@ class SignupPage extends Component {
         })
             .then((response) => {
                 if (response.status === 201) {
+                    ToastAndroid.show('Sign up successful', ToastAndroid.SHORT)
                     console.log('Successful')
                     this.autoLogin()
                 } else if (response.status === 400) {
                     console.log('Invalid validation')
+                    ToastAndroid.show('Make sure your information is correct', ToastAndroid.SHORT)
                 } else {
                     console.log('Error')
                 }
@@ -46,7 +67,7 @@ class SignupPage extends Component {
     }
 
     autoLogin = async () => {
-        const nav = this.props.navigation
+        const { navigation } = this.props
         const { password, email } = this.state
 
         let payload = { email: email, password: password }
@@ -58,7 +79,7 @@ class SignupPage extends Component {
             },
             body: JSON.stringify(payload),
         })
-            .then((response) => response.json())
+            .then((response) => this.statusCodeHandler(response))
             .then(async (responseJson) => {
                 console.log(responseJson)
                 await AsyncStorage.setItem(
@@ -66,7 +87,7 @@ class SignupPage extends Component {
                     String(responseJson.token)
                 )
                 await AsyncStorage.setItem('user_id', String(responseJson.id))
-                nav.navigate('AccountPage')
+                navigation.navigate('AccountPage')
             })
             .catch((error) => {
                 console.log(error)
@@ -74,7 +95,7 @@ class SignupPage extends Component {
     }
 
     render() {
-        const nav = this.props.navigation
+        const { navigation } = this.props
         return (
             <View style={styles.container}>
                 <Title style={styles.titlePage}>Sign up</Title>
@@ -116,7 +137,7 @@ class SignupPage extends Component {
                 <Button
                     style={styles.signupButton}
                     mode='contained'
-                    onPress={() => nav.navigate('LoginPage')}>
+                    onPress={() => navigation.navigate('LoginPage')}>
                     Login
 				</Button>
             </View>
