@@ -86,11 +86,17 @@ class AccountPage extends Component {
 			.then((response) => {
 				if (response.status === 200) {
 					console.log('user gone')
-					this.setState({userData: [], userReviews: { reviews: [] }})
+					this.setState({
+						userData: [],
+						userReviews: { reviews: [] },
+					})
 					AsyncStorage.clear()
 					navigation.navigate('LoginPage')
 				} else {
-					this.setState({userData: [], userReviews: { reviews: [] }})
+					this.setState({
+						userData: [],
+						userReviews: { reviews: [] },
+					})
 					AsyncStorage.clear()
 				}
 			})

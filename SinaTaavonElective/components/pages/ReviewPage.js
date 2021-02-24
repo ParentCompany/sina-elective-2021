@@ -4,7 +4,7 @@ import {
 	View,
 	StyleSheet,
 	ScrollView,
-	RefreshControl
+	RefreshControl,
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Button, Card } from 'react-native-paper'
@@ -113,7 +113,9 @@ class ReviewPage extends Component {
 			})
 			.catch((error) => {
 				console.log(error + 'Account page error')
-				Alert.alert(`There has been an unknown error from the server.`)
+				Alert.alert(
+					`There has been an unknown error from the server.`
+				)
 			})
 	}
 

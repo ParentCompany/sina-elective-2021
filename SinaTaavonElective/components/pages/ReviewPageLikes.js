@@ -7,7 +7,7 @@ import {
 	RefreshControl,
 	Image,
 	Dimensions,
-	ToastAndroid
+	ToastAndroid,
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {
@@ -26,7 +26,7 @@ class ReviewPageLikes extends Component {
 			favourite: false,
 			userData: {},
 			refreshing: false,
-			image: null
+			image: null,
 		}
 	}
 
@@ -91,15 +91,22 @@ class ReviewPageLikes extends Component {
 		)
 			.then((response) => {
 				if (response.status === 200) {
-					ToastAndroid.show('Review has been liked', ToastAndroid.SHORT)
+					ToastAndroid.show(
+						'Review has been liked',
+						ToastAndroid.SHORT
+					)
 					navigation.goBack()
 				} else {
-					Alert.alert(`There has been an unknown error from the server.`)
+					Alert.alert(
+						`There has been an unknown error from the server.`
+					)
 				}
 			})
 			.catch((error) => {
 				console.log(error + 'Account page error')
-				Alert.alert(`There has been an unknown error from the server.`)
+				Alert.alert(
+					`There has been an unknown error from the server.`
+				)
 			})
 	}
 
@@ -130,7 +137,9 @@ class ReviewPageLikes extends Component {
 			})
 			.catch((error) => {
 				console.log(error + 'Account page error')
-				Alert.alert(`There has been an unknown error from the server.`)
+				Alert.alert(
+					`There has been an unknown error from the server.`
+				)
 			})
 	}
 
@@ -153,15 +162,22 @@ class ReviewPageLikes extends Component {
 		)
 			.then((response) => {
 				if (response.status === 200) {
-					ToastAndroid.show('Review has been unliked', ToastAndroid.SHORT)
+					ToastAndroid.show(
+						'Review has been unliked',
+						ToastAndroid.SHORT
+					)
 					navigation.goBack()
 				} else {
-					Alert.alert(`There has been an unknown error from the server.`)
+					Alert.alert(
+						`There has been an unknown error from the server.`
+					)
 				}
 			})
 			.catch((error) => {
 				console.log(error + 'Account page error')
-				Alert.alert(`There has been an unknown error from the server.`)
+				Alert.alert(
+					`There has been an unknown error from the server.`
+				)
 			})
 	}
 
@@ -175,7 +191,7 @@ class ReviewPageLikes extends Component {
 	render() {
 		const { route } = this.props
 		const { reviewId, reviewBody, reviewLikes } = route.params
-		const { image } = this.state;
+		const { image } = this.state
 
 		return (
 			<View style={styles.container}>
@@ -197,7 +213,9 @@ class ReviewPageLikes extends Component {
 									/>
 								</View>
 							)}
-							<Title style={styles.ratingSpace}>Review ID: {reviewId}</Title>
+							<Title style={styles.ratingSpace}>
+								Review ID: {reviewId}
+							</Title>
 							<View style={styles.reviewRow}>
 								<Avatar.Icon
 									style={styles.avatarIcon}
@@ -286,7 +304,7 @@ const styles = StyleSheet.create({
 		borderRadius: 7,
 		width: Dimensions.get('screen').width - 50,
 		height: 250,
-		marginVertical: 10
+		marginVertical: 10,
 	},
 })
 

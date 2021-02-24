@@ -81,7 +81,9 @@ class HomePage extends Component {
 			})
 			.catch((error) => {
 				console.log(error + 'Account page error')
-				Alert.alert(`There has been an unknown error from the server.`)
+				Alert.alert(
+					`There has been an unknown error from the server.`
+				)
 			})
 	}
 

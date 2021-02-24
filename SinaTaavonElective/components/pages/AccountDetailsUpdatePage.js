@@ -1,6 +1,6 @@
-import React, {Component} from 'react'
-import {Button, TextInput, Title, Caption} from 'react-native-paper'
-import {Alert, View, StyleSheet} from 'react-native'
+import React, { Component } from 'react'
+import { Button, TextInput, Title, Caption } from 'react-native-paper'
+import { View, StyleSheet } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
 class AccountDetailsUpdatePage extends Component {
@@ -16,7 +16,7 @@ class AccountDetailsUpdatePage extends Component {
 	}
 
 	onChangeText = (key, value) => {
-		this.setState({[key]: value})
+		this.setState({ [key]: value })
 	}
 
 	cleanObject = (object) => {
@@ -33,10 +33,10 @@ class AccountDetailsUpdatePage extends Component {
 	}
 
 	UpdateDetails = async () => {
-		const {navigation} = this.props
+		const { navigation } = this.props
 		const token = await AsyncStorage.getItem('session_token')
 		const userId = await AsyncStorage.getItem('user_id')
-		const {password, email, firstname, lastname} = this.state
+		const { password, email, firstname, lastname } = this.state
 
 		let payload = {
 			first_name: firstname,
@@ -57,7 +57,7 @@ class AccountDetailsUpdatePage extends Component {
 		})
 			.then((response) => {
 				if (response.status === 200) {
-					navigation.push('AccountPage', {reFetch: 'updated'})
+					navigation.push('AccountPage', { reFetch: 'updated' })
 				} else if (response.status === 400) {
 					console.log('Invalid validation')
 				} else {
@@ -77,13 +77,17 @@ class AccountDetailsUpdatePage extends Component {
 					style={styles.textInput}
 					placeholder='First name'
 					autoCapitalize='none'
-					onChangeText={(value) => this.onChangeText('firstname', value)}
+					onChangeText={(value) =>
+						this.onChangeText('firstname', value)
+					}
 				/>
 				<TextInput
 					style={styles.textInput}
 					placeholder='Last name'
 					autoCapitalize='none'
-					onChangeText={(value) => this.onChangeText('lastname', value)}
+					onChangeText={(value) =>
+						this.onChangeText('lastname', value)
+					}
 				/>
 				<TextInput
 					style={styles.textInput}
@@ -96,9 +100,13 @@ class AccountDetailsUpdatePage extends Component {
 					placeholder='Password'
 					secureTextEntry={true}
 					autoCapitalize='none'
-					onChangeText={(value) => this.onChangeText('password', value)}
+					onChangeText={(value) =>
+						this.onChangeText('password', value)
+					}
 				/>
-				<Caption style={styles.captionText}>Minimum 5 characters </Caption>
+				<Caption style={styles.captionText}>
+					Minimum 5 characters{' '}
+				</Caption>
 				<Button
 					style={styles.signupButton}
 					mode='contained'

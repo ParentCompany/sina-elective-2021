@@ -4,7 +4,6 @@ import {
 	View,
 	StyleSheet,
 	ScrollView,
-	Image,
 	Dimensions
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
